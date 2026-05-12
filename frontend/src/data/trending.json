@@ -1,0 +1,842 @@
+[
+  {
+    "id": 101,
+    "title": "Dune: Part Two",
+    "original_title": "Dune: Part Two",
+    "overview": "Paul unites with the Fremen on a warpath of revenge against those who destroyed his family.",
+    "poster_path": "/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg",
+    "backdrop_path": "/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg",
+    "release_date": "2024-03-01",
+    "vote_average": 8.6,
+    "vote_count": 420000,
+    "popularity": 9800,
+    "genre_ids": [
+      878,
+      12
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 166,
+    "status": "Released",
+    "tagline": "Long live the fighters.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8.9,
+        "content": "Dune: Part Two delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 8.4,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Da’Vine Joy Randolph",
+        "character": "Mary Lamb",
+        "profile_path": "https://i.pravatar.cc/300?u=Da%E2%80%99Vine%20Joy%20Randolph101"
+      },
+      {
+        "name": "Ryan Gosling",
+        "character": "Ken",
+        "profile_path": "https://i.pravatar.cc/300?u=Ryan%20Gosling101"
+      },
+      {
+        "name": "Oscar Isaac",
+        "character": "Duke Leto",
+        "profile_path": "https://i.pravatar.cc/300?u=Oscar%20Isaac101"
+      },
+      {
+        "name": "Tom Cruise",
+        "character": "Ethan Hunt",
+        "profile_path": "https://i.pravatar.cc/300?u=Tom%20Cruise101"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=Way9Dexny3w"
+  },
+  {
+    "id": 102,
+    "title": "Oppenheimer",
+    "original_title": "Oppenheimer",
+    "overview": "The story of American scientist J. Robert Oppenheimer and his role in developing the atomic bomb.",
+    "poster_path": "/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",
+    "backdrop_path": "/neeNHeXjMF5fXoCJRsOmkNGC7q.jpg",
+    "release_date": "2023-07-21",
+    "vote_average": 8.4,
+    "vote_count": 610000,
+    "popularity": 9200,
+    "genre_ids": [
+      36,
+      18
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 180,
+    "status": "Released",
+    "tagline": "The world forever changes.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8.700000000000001,
+        "content": "Oppenheimer delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 8.200000000000001,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Dominic Sessa",
+        "character": "Angus Tully",
+        "profile_path": "https://i.pravatar.cc/300?u=Dominic%20Sessa102"
+      },
+      {
+        "name": "America Ferrera",
+        "character": "Gloria",
+        "profile_path": "https://i.pravatar.cc/300?u=America%20Ferrera102"
+      },
+      {
+        "name": "Florence Pugh",
+        "character": "Princess Irulan",
+        "profile_path": "https://i.pravatar.cc/300?u=Florence%20Pugh102"
+      },
+      {
+        "name": "Hayley Atwell",
+        "character": "Grace",
+        "profile_path": "https://i.pravatar.cc/300?u=Hayley%20Atwell102"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=6RRLLCv2srQ"
+  },
+  {
+    "id": 103,
+    "title": "Mission: Impossible – Dead Reckoning",
+    "original_title": "Mission: Impossible – Dead Reckoning",
+    "overview": "Ethan Hunt and the IMF team must track down a terrifying new weapon.",
+    "poster_path": "/NNxYkU70HPurnNCSiCjYAmacwm.jpg",
+    "backdrop_path": "/628Dep6AxEtDxjZoGP78TsOxYbK.jpg",
+    "release_date": "2023-07-12",
+    "vote_average": 7.7,
+    "vote_count": 310000,
+    "popularity": 7800,
+    "genre_ids": [
+      28,
+      12
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 163,
+    "status": "Released",
+    "tagline": "We all share the same fate.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8,
+        "content": "Mission: Impossible – Dead Reckoning delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 7.5,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Lily Gladstone",
+        "character": "Mollie Burkhart",
+        "profile_path": "https://i.pravatar.cc/300?u=Lily%20Gladstone103"
+      },
+      {
+        "name": "Michael Cera",
+        "character": "Allan",
+        "profile_path": "https://i.pravatar.cc/300?u=Michael%20Cera103"
+      },
+      {
+        "name": "Austin Butler",
+        "character": "Feyd-Rautha",
+        "profile_path": "https://i.pravatar.cc/300?u=Austin%20Butler103"
+      },
+      {
+        "name": "Ana de Armas",
+        "character": "Dani Miranda",
+        "profile_path": "https://i.pravatar.cc/300?u=Ana%20de%20Armas103"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=eWc47_ocZb0"
+  },
+  {
+    "id": 104,
+    "title": "Barbie",
+    "original_title": "Barbie",
+    "overview": "Barbie suffers a crisis that leads her to question her world and her existence.",
+    "poster_path": "/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg",
+    "backdrop_path": "/mbYTRO33LJAgpCMrIn9ibiWHbMH.jpg",
+    "release_date": "2023-07-21",
+    "vote_average": 6.9,
+    "vote_count": 890000,
+    "popularity": 8600,
+    "genre_ids": [
+      35,
+      14
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 114,
+    "status": "Released",
+    "tagline": "She’s everything. He’s just Ken.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 7.2,
+        "content": "Barbie delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 6.7,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Leonardo DiCaprio",
+        "character": "Ernest Burkhart",
+        "profile_path": "https://i.pravatar.cc/300?u=Leonardo%20DiCaprio104"
+      },
+      {
+        "name": "Ke Huy Quan",
+        "character": "Ode to Joy narrator",
+        "profile_path": "https://i.pravatar.cc/300?u=Ke%20Huy%20Quan104"
+      },
+      {
+        "name": "Cillian Murphy",
+        "character": "Robert Oppenheimer",
+        "profile_path": "https://i.pravatar.cc/300?u=Cillian%20Murphy104"
+      },
+      {
+        "name": "Ryan Gosling",
+        "character": "Colt Seavers",
+        "profile_path": "https://i.pravatar.cc/300?u=Ryan%20Gosling104"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=d9MyW72ELq0"
+  },
+  {
+    "id": 105,
+    "title": "Killers of the Flower Moon",
+    "original_title": "Killers of the Flower Moon",
+    "overview": "Members of the Osage tribe are murdered under mysterious circumstances.",
+    "poster_path": "/dB6Krk806zeqd0YNp2ngQ9zXteH.jpg",
+    "backdrop_path": "/1X7vow16X7CnCoexXh4H4F2yDJv.jpg",
+    "release_date": "2023-10-20",
+    "vote_average": 7.7,
+    "vote_count": 195000,
+    "popularity": 5400,
+    "genre_ids": [
+      36,
+      80
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 206,
+    "status": "Released",
+    "tagline": "Greed is an animal.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8,
+        "content": "Killers of the Flower Moon delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 7.5,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Robert De Niro",
+        "character": "William Hale",
+        "profile_path": "https://i.pravatar.cc/300?u=Robert%20De%20Niro105"
+      },
+      {
+        "name": "Timothée Chalamet",
+        "character": "Paul Atreides",
+        "profile_path": "https://i.pravatar.cc/300?u=Timoth%C3%A9e%20Chalamet105"
+      },
+      {
+        "name": "Emily Blunt",
+        "character": "Kitty Oppenheimer",
+        "profile_path": "https://i.pravatar.cc/300?u=Emily%20Blunt105"
+      },
+      {
+        "name": "Emily Blunt",
+        "character": "Jody Moreno",
+        "profile_path": "https://i.pravatar.cc/300?u=Emily%20Blunt105"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=L9W88mbtZxw"
+  },
+  {
+    "id": 106,
+    "title": "The Holdovers",
+    "original_title": "The Holdovers",
+    "overview": "A cranky history teacher at a remote prep school is forced to remain on campus over the holidays.",
+    "poster_path": "/VHSzNBTwxV8vh7wylo7O9CLdac.jpg",
+    "backdrop_path": "/A99WMiz0ASpH9coOFrxSEuwTWx0.jpg",
+    "release_date": "2023-10-27",
+    "vote_average": 7.9,
+    "vote_count": 142000,
+    "popularity": 4100,
+    "genre_ids": [
+      35,
+      18
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 133,
+    "status": "Released",
+    "tagline": "Discomfort & joy.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8.200000000000001,
+        "content": "The Holdovers delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 7.7,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Jesse Plemons",
+        "character": "Tom White",
+        "profile_path": "https://i.pravatar.cc/300?u=Jesse%20Plemons106"
+      },
+      {
+        "name": "Zendaya",
+        "character": "Chani",
+        "profile_path": "https://i.pravatar.cc/300?u=Zendaya106"
+      },
+      {
+        "name": "Matt Damon",
+        "character": "Leslie Groves",
+        "profile_path": "https://i.pravatar.cc/300?u=Matt%20Damon106"
+      },
+      {
+        "name": "Pedro Pascal",
+        "character": "Tom Ryder",
+        "profile_path": "https://i.pravatar.cc/300?u=Pedro%20Pascal106"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=m8GE3m5CEN8"
+  },
+  {
+    "id": 107,
+    "title": "Poor Things",
+    "original_title": "Poor Things",
+    "overview": "Brought back to life by an eccentric scientist, a young woman runs off on a whirlwind adventure.",
+    "poster_path": "/tnAuB8q5vv7Ax9UAEje5Xi4BXik.jpg",
+    "backdrop_path": "/13Nz8EchKRdCgJcKdEoJAnpiVn2.jpg",
+    "release_date": "2023-12-08",
+    "vote_average": 7.8,
+    "vote_count": 178000,
+    "popularity": 5200,
+    "genre_ids": [
+      878,
+      35
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 141,
+    "status": "Released",
+    "tagline": "She’s like nothing you’ve ever seen.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8.1,
+        "content": "Poor Things delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 7.6,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Margot Robbie",
+        "character": "Barbie",
+        "profile_path": "https://i.pravatar.cc/300?u=Margot%20Robbie107"
+      },
+      {
+        "name": "Rebecca Ferguson",
+        "character": "Lady Jessica",
+        "profile_path": "https://i.pravatar.cc/300?u=Rebecca%20Ferguson107"
+      },
+      {
+        "name": "Robert Downey Jr.",
+        "character": "Lewis Strauss",
+        "profile_path": "https://i.pravatar.cc/300?u=Robert%20Downey%20Jr.107"
+      },
+      {
+        "name": "Paul Giamatti",
+        "character": "Paul Hunham",
+        "profile_path": "https://i.pravatar.cc/300?u=Paul%20Giamatti107"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=pBk4NYhWNMM"
+  },
+  {
+    "id": 108,
+    "title": "John Wick: Chapter 4",
+    "original_title": "John Wick: Chapter 4",
+    "overview": "John Wick uncovers a path to defeating The High Table.",
+    "poster_path": "/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg",
+    "backdrop_path": "/7I6VUdPj6tQECNHdviJkUHD2u89.jpg",
+    "release_date": "2023-03-24",
+    "vote_average": 7.7,
+    "vote_count": 290000,
+    "popularity": 7100,
+    "genre_ids": [
+      28,
+      53
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 169,
+    "status": "Released",
+    "tagline": "No way back. One way out.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8,
+        "content": "John Wick: Chapter 4 delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 7.5,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Ryan Gosling",
+        "character": "Ken",
+        "profile_path": "https://i.pravatar.cc/300?u=Ryan%20Gosling108"
+      },
+      {
+        "name": "Oscar Isaac",
+        "character": "Duke Leto",
+        "profile_path": "https://i.pravatar.cc/300?u=Oscar%20Isaac108"
+      },
+      {
+        "name": "Tom Cruise",
+        "character": "Ethan Hunt",
+        "profile_path": "https://i.pravatar.cc/300?u=Tom%20Cruise108"
+      },
+      {
+        "name": "Da’Vine Joy Randolph",
+        "character": "Mary Lamb",
+        "profile_path": "https://i.pravatar.cc/300?u=Da%E2%80%99Vine%20Joy%20Randolph108"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=uYPbbksJxIg"
+  },
+  {
+    "id": 109,
+    "title": "Spider-Man: Across the Spider-Verse",
+    "original_title": "Spider-Man: Across the Spider-Verse",
+    "overview": "Miles Morales catapults across the Multiverse to stop a threat to all realities.",
+    "poster_path": "/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg",
+    "backdrop_path": "/9xfDWXAUbFXQK585JvByT5pEAhe.jpg",
+    "release_date": "2023-06-02",
+    "vote_average": 8.4,
+    "vote_count": 520000,
+    "popularity": 8800,
+    "genre_ids": [
+      16,
+      12
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 140,
+    "status": "Released",
+    "tagline": "Be greater. Together.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8.700000000000001,
+        "content": "Spider-Man: Across the Spider-Verse delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 8.200000000000001,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "America Ferrera",
+        "character": "Gloria",
+        "profile_path": "https://i.pravatar.cc/300?u=America%20Ferrera109"
+      },
+      {
+        "name": "Florence Pugh",
+        "character": "Princess Irulan",
+        "profile_path": "https://i.pravatar.cc/300?u=Florence%20Pugh109"
+      },
+      {
+        "name": "Hayley Atwell",
+        "character": "Grace",
+        "profile_path": "https://i.pravatar.cc/300?u=Hayley%20Atwell109"
+      },
+      {
+        "name": "Dominic Sessa",
+        "character": "Angus Tully",
+        "profile_path": "https://i.pravatar.cc/300?u=Dominic%20Sessa109"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=h74AXqw4Opc"
+  },
+  {
+    "id": 110,
+    "title": "Guardians of the Galaxy Vol. 3",
+    "original_title": "Guardians of the Galaxy Vol. 3",
+    "overview": "Still reeling from the loss of Gamora, Peter Quill must rally his team.",
+    "poster_path": "/r2J02Z2OpNTctfOSN1Ydgii51I3.jpg",
+    "backdrop_path": "/5YZbUmjbMa3ClvSW1Wj3D6XGolb.jpg",
+    "release_date": "2023-05-05",
+    "vote_average": 7.9,
+    "vote_count": 380000,
+    "popularity": 6700,
+    "genre_ids": [
+      12,
+      878
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 150,
+    "status": "Released",
+    "tagline": "It’s time to face the music.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8.200000000000001,
+        "content": "Guardians of the Galaxy Vol. 3 delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 7.7,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Michael Cera",
+        "character": "Allan",
+        "profile_path": "https://i.pravatar.cc/300?u=Michael%20Cera110"
+      },
+      {
+        "name": "Austin Butler",
+        "character": "Feyd-Rautha",
+        "profile_path": "https://i.pravatar.cc/300?u=Austin%20Butler110"
+      },
+      {
+        "name": "Ana de Armas",
+        "character": "Dani Miranda",
+        "profile_path": "https://i.pravatar.cc/300?u=Ana%20de%20Armas110"
+      },
+      {
+        "name": "Lily Gladstone",
+        "character": "Mollie Burkhart",
+        "profile_path": "https://i.pravatar.cc/300?u=Lily%20Gladstone110"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=otNh9gTtfXU"
+  },
+  {
+    "id": 111,
+    "title": "Past Lives",
+    "original_title": "Past Lives",
+    "overview": "Childhood sweethearts are reunited for one fateful week as they contemplate what could have been.",
+    "poster_path": "/k3waqVXSnvCZWfJYNtdamTgTtTA.jpg",
+    "backdrop_path": "/7HR38hMBl23lf38MAN63y4pKsHz.jpg",
+    "release_date": "2023-06-02",
+    "vote_average": 8,
+    "vote_count": 112000,
+    "popularity": 3900,
+    "genre_ids": [
+      10749,
+      18
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 105,
+    "status": "Released",
+    "tagline": "What if…",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8.3,
+        "content": "Past Lives delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 7.8,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Ke Huy Quan",
+        "character": "Ode to Joy narrator",
+        "profile_path": "https://i.pravatar.cc/300?u=Ke%20Huy%20Quan111"
+      },
+      {
+        "name": "Cillian Murphy",
+        "character": "Robert Oppenheimer",
+        "profile_path": "https://i.pravatar.cc/300?u=Cillian%20Murphy111"
+      },
+      {
+        "name": "Ryan Gosling",
+        "character": "Colt Seavers",
+        "profile_path": "https://i.pravatar.cc/300?u=Ryan%20Gosling111"
+      },
+      {
+        "name": "Leonardo DiCaprio",
+        "character": "Ernest Burkhart",
+        "profile_path": "https://i.pravatar.cc/300?u=Leonardo%20DiCaprio111"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=pVsOZXrO2o0"
+  },
+  {
+    "id": 112,
+    "title": "The Batman",
+    "original_title": "The Batman",
+    "overview": "Batman ventures into Gotham’s underworld when a sadistic killer leaves behind a trail of cryptic clues.",
+    "poster_path": "/74xTEgt7R36Fpooo50r9T25onhq.jpg",
+    "backdrop_path": "/rvtdN5XkWAfGX6xDuPL6yYS2seK.jpg",
+    "release_date": "2022-03-04",
+    "vote_average": 7.8,
+    "vote_count": 610000,
+    "popularity": 7900,
+    "genre_ids": [
+      80,
+      28
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 176,
+    "status": "Released",
+    "tagline": "Unmask the truth.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8.1,
+        "content": "The Batman delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 7.6,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Timothée Chalamet",
+        "character": "Paul Atreides",
+        "profile_path": "https://i.pravatar.cc/300?u=Timoth%C3%A9e%20Chalamet112"
+      },
+      {
+        "name": "Emily Blunt",
+        "character": "Kitty Oppenheimer",
+        "profile_path": "https://i.pravatar.cc/300?u=Emily%20Blunt112"
+      },
+      {
+        "name": "Emily Blunt",
+        "character": "Jody Moreno",
+        "profile_path": "https://i.pravatar.cc/300?u=Emily%20Blunt112"
+      },
+      {
+        "name": "Robert De Niro",
+        "character": "William Hale",
+        "profile_path": "https://i.pravatar.cc/300?u=Robert%20De%20Niro112"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=wKiI0RvKgSe"
+  },
+  {
+    "id": 113,
+    "title": "Everything Everywhere All at Once",
+    "original_title": "Everything Everywhere All at Once",
+    "overview": "A middle-aged Chinese immigrant is swept into an insane adventure.",
+    "poster_path": "/u68AjlvlutfEIcpmbYpKcdi09ut.jpg",
+    "backdrop_path": "/6zV1AJUj0EzsJV05Ru2lfAWIn3R.jpg",
+    "release_date": "2022-03-25",
+    "vote_average": 7.8,
+    "vote_count": 480000,
+    "popularity": 8200,
+    "genre_ids": [
+      28,
+      878
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 139,
+    "status": "Released",
+    "tagline": "The universe is vast.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8.1,
+        "content": "Everything Everywhere All at Once delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 7.6,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Zendaya",
+        "character": "Chani",
+        "profile_path": "https://i.pravatar.cc/300?u=Zendaya113"
+      },
+      {
+        "name": "Matt Damon",
+        "character": "Leslie Groves",
+        "profile_path": "https://i.pravatar.cc/300?u=Matt%20Damon113"
+      },
+      {
+        "name": "Pedro Pascal",
+        "character": "Tom Ryder",
+        "profile_path": "https://i.pravatar.cc/300?u=Pedro%20Pascal113"
+      },
+      {
+        "name": "Jesse Plemons",
+        "character": "Tom White",
+        "profile_path": "https://i.pravatar.cc/300?u=Jesse%20Plemons113"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=Shah8AN253Y"
+  },
+  {
+    "id": 114,
+    "title": "Top Gun: Maverick",
+    "original_title": "Top Gun: Maverick",
+    "overview": "After thirty years, Maverick is still pushing the envelope as a top naval aviator.",
+    "poster_path": "/n0YuM4f5lvGAP6MAW2kBIzugXnc.jpg",
+    "backdrop_path": "/AaV1YIdWKnjAIAOe8UUKBFm327v.jpg",
+    "release_date": "2022-05-27",
+    "vote_average": 8.2,
+    "vote_count": 720000,
+    "popularity": 9100,
+    "genre_ids": [
+      28,
+      18
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 131,
+    "status": "Released",
+    "tagline": "Feel the need for speed.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 8.5,
+        "content": "Top Gun: Maverick delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 7.999999999999999,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Rebecca Ferguson",
+        "character": "Lady Jessica",
+        "profile_path": "https://i.pravatar.cc/300?u=Rebecca%20Ferguson114"
+      },
+      {
+        "name": "Robert Downey Jr.",
+        "character": "Lewis Strauss",
+        "profile_path": "https://i.pravatar.cc/300?u=Robert%20Downey%20Jr.114"
+      },
+      {
+        "name": "Paul Giamatti",
+        "character": "Paul Hunham",
+        "profile_path": "https://i.pravatar.cc/300?u=Paul%20Giamatti114"
+      },
+      {
+        "name": "Margot Robbie",
+        "character": "Barbie",
+        "profile_path": "https://i.pravatar.cc/300?u=Margot%20Robbie114"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=uqmAj8dox64"
+  },
+  {
+    "id": 115,
+    "title": "Avatar: The Way of Water",
+    "original_title": "Avatar: The Way of Water",
+    "overview": "Jake Sully lives with his newfound family on the extrasolar moon Pandora.",
+    "poster_path": "/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg",
+    "backdrop_path": "/kJsPVzdyBrYHLomuNv5SJDXUQ2f.jpg",
+    "release_date": "2022-12-16",
+    "vote_average": 7.5,
+    "vote_count": 620000,
+    "popularity": 8500,
+    "genre_ids": [
+      878,
+      12
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 192,
+    "status": "Released",
+    "tagline": "Return to Pandora.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 7.8,
+        "content": "Avatar: The Way of Water delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": 7.3,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Oscar Isaac",
+        "character": "Duke Leto",
+        "profile_path": "https://i.pravatar.cc/300?u=Oscar%20Isaac115"
+      },
+      {
+        "name": "Tom Cruise",
+        "character": "Ethan Hunt",
+        "profile_path": "https://i.pravatar.cc/300?u=Tom%20Cruise115"
+      },
+      {
+        "name": "Da’Vine Joy Randolph",
+        "character": "Mary Lamb",
+        "profile_path": "https://i.pravatar.cc/300?u=Da%E2%80%99Vine%20Joy%20Randolph115"
+      },
+      {
+        "name": "Ryan Gosling",
+        "character": "Ken",
+        "profile_path": "https://i.pravatar.cc/300?u=Ryan%20Gosling115"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=yAZxx8t9zig"
+  }
+]

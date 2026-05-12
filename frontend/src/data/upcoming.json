@@ -1,0 +1,842 @@
+[
+  {
+    "id": 201,
+    "title": "Thunderbolts*",
+    "original_title": "Thunderbolts*",
+    "overview": "A team of antiheroes embark on missions for the government.",
+    "poster_path": "/hqcexYHbiTBfDIdDWxrxPtVndBX.jpg",
+    "backdrop_path": "/rthMuZfFv4fqEU4JVbgSW9wQ8rs.jpg",
+    "release_date": "2026-07-17",
+    "vote_average": 0,
+    "vote_count": 12000,
+    "popularity": 7200,
+    "genre_ids": [
+      28,
+      12
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Post-production",
+    "tagline": "Not heroes. Not villains.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "Thunderbolts* delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Austin Butler",
+        "character": "Feyd-Rautha",
+        "profile_path": "https://i.pravatar.cc/300?u=Austin%20Butler201"
+      },
+      {
+        "name": "Ana de Armas",
+        "character": "Dani Miranda",
+        "profile_path": "https://i.pravatar.cc/300?u=Ana%20de%20Armas201"
+      },
+      {
+        "name": "Lily Gladstone",
+        "character": "Mollie Burkhart",
+        "profile_path": "https://i.pravatar.cc/300?u=Lily%20Gladstone201"
+      },
+      {
+        "name": "Michael Cera",
+        "character": "Allan",
+        "profile_path": "https://i.pravatar.cc/300?u=Michael%20Cera201"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=m8GE3m5CEN8"
+  },
+  {
+    "id": 202,
+    "title": "The Fantastic Four: First Steps",
+    "original_title": "The Fantastic Four: First Steps",
+    "overview": "Marvel’s first family faces their greatest challenge yet.",
+    "poster_path": "/abqOz6EL3yXyOOafCPZxjL1M5bQ.jpg",
+    "backdrop_path": "/s94NjfKkcSczZ1FembwmQZwsuwY.jpg",
+    "release_date": "2026-07-25",
+    "vote_average": 0,
+    "vote_count": 8900,
+    "popularity": 6800,
+    "genre_ids": [
+      878,
+      12
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Post-production",
+    "tagline": "Prepare 4 launch.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "The Fantastic Four: First Steps delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Cillian Murphy",
+        "character": "Robert Oppenheimer",
+        "profile_path": "https://i.pravatar.cc/300?u=Cillian%20Murphy202"
+      },
+      {
+        "name": "Ryan Gosling",
+        "character": "Colt Seavers",
+        "profile_path": "https://i.pravatar.cc/300?u=Ryan%20Gosling202"
+      },
+      {
+        "name": "Leonardo DiCaprio",
+        "character": "Ernest Burkhart",
+        "profile_path": "https://i.pravatar.cc/300?u=Leonardo%20DiCaprio202"
+      },
+      {
+        "name": "Ke Huy Quan",
+        "character": "Ode to Joy narrator",
+        "profile_path": "https://i.pravatar.cc/300?u=Ke%20Huy%20Quan202"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=pBk4NYhWNMM"
+  },
+  {
+    "id": 203,
+    "title": "Superman",
+    "original_title": "Superman",
+    "overview": "Superman balances his Kryptonian heritage with his human upbringing.",
+    "poster_path": "/ldyfo0BKmz5rWtJJKCvwaNS4cJT.jpg",
+    "backdrop_path": "/eU7IfdWq8KQy0oNd4kKXS0QUR08.jpg",
+    "release_date": "2026-07-11",
+    "vote_average": 0,
+    "vote_count": 15000,
+    "popularity": 9100,
+    "genre_ids": [
+      28,
+      14
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Post-production",
+    "tagline": "Look up.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "Superman delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Emily Blunt",
+        "character": "Kitty Oppenheimer",
+        "profile_path": "https://i.pravatar.cc/300?u=Emily%20Blunt203"
+      },
+      {
+        "name": "Emily Blunt",
+        "character": "Jody Moreno",
+        "profile_path": "https://i.pravatar.cc/300?u=Emily%20Blunt203"
+      },
+      {
+        "name": "Robert De Niro",
+        "character": "William Hale",
+        "profile_path": "https://i.pravatar.cc/300?u=Robert%20De%20Niro203"
+      },
+      {
+        "name": "Timothée Chalamet",
+        "character": "Paul Atreides",
+        "profile_path": "https://i.pravatar.cc/300?u=Timoth%C3%A9e%20Chalamet203"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=uYPbbksJxIg"
+  },
+  {
+    "id": 204,
+    "title": "Mission: Impossible – The Final Reckoning",
+    "original_title": "Mission: Impossible – The Final Reckoning",
+    "overview": "Ethan Hunt faces his deadliest mission yet.",
+    "poster_path": "/aciP8Km0waTLXEYf5ybFK5CSUxl.jpg",
+    "backdrop_path": "/AVWlQpVhpudyFsSh3OQIieHHYf.jpg",
+    "release_date": "2026-05-22",
+    "vote_average": 0,
+    "vote_count": 22000,
+    "popularity": 8400,
+    "genre_ids": [
+      28,
+      12
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Post-production",
+    "tagline": "Nothing ends well.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "Mission: Impossible – The Final Reckoning delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Matt Damon",
+        "character": "Leslie Groves",
+        "profile_path": "https://i.pravatar.cc/300?u=Matt%20Damon204"
+      },
+      {
+        "name": "Pedro Pascal",
+        "character": "Tom Ryder",
+        "profile_path": "https://i.pravatar.cc/300?u=Pedro%20Pascal204"
+      },
+      {
+        "name": "Jesse Plemons",
+        "character": "Tom White",
+        "profile_path": "https://i.pravatar.cc/300?u=Jesse%20Plemons204"
+      },
+      {
+        "name": "Zendaya",
+        "character": "Chani",
+        "profile_path": "https://i.pravatar.cc/300?u=Zendaya204"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=h74AXqw4Opc"
+  },
+  {
+    "id": 205,
+    "title": "Jurassic World: Rebirth",
+    "original_title": "Jurassic World: Rebirth",
+    "overview": "A new era of survival begins.",
+    "poster_path": "/1RICxzeoNCAO5NpcRMIgg1XT6fm.jpg",
+    "backdrop_path": "/zNriRTr0kWwyaXPzdg1EIxf0BWk.jpg",
+    "release_date": "2026-07-02",
+    "vote_average": 0,
+    "vote_count": 11000,
+    "popularity": 6200,
+    "genre_ids": [
+      12,
+      28
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Post-production",
+    "tagline": "Life finds a way.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "Jurassic World: Rebirth delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Robert Downey Jr.",
+        "character": "Lewis Strauss",
+        "profile_path": "https://i.pravatar.cc/300?u=Robert%20Downey%20Jr.205"
+      },
+      {
+        "name": "Paul Giamatti",
+        "character": "Paul Hunham",
+        "profile_path": "https://i.pravatar.cc/300?u=Paul%20Giamatti205"
+      },
+      {
+        "name": "Margot Robbie",
+        "character": "Barbie",
+        "profile_path": "https://i.pravatar.cc/300?u=Margot%20Robbie205"
+      },
+      {
+        "name": "Rebecca Ferguson",
+        "character": "Lady Jessica",
+        "profile_path": "https://i.pravatar.cc/300?u=Rebecca%20Ferguson205"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=otNh9gTtfXU"
+  },
+  {
+    "id": 206,
+    "title": "F1",
+    "original_title": "F1",
+    "overview": "A Formula 1 driver returns from retirement.",
+    "poster_path": "/vqBmyAj0Xm9LnS1xe1MSlMAJyHq.jpg",
+    "backdrop_path": "/rZWkXnIyTLzUJpHSUpOb7vgB0BL.jpg",
+    "release_date": "2026-06-27",
+    "vote_average": 0,
+    "vote_count": 9500,
+    "popularity": 5800,
+    "genre_ids": [
+      18,
+      28
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Post-production",
+    "tagline": "Racing is life.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "F1 delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Tom Cruise",
+        "character": "Ethan Hunt",
+        "profile_path": "https://i.pravatar.cc/300?u=Tom%20Cruise206"
+      },
+      {
+        "name": "Da’Vine Joy Randolph",
+        "character": "Mary Lamb",
+        "profile_path": "https://i.pravatar.cc/300?u=Da%E2%80%99Vine%20Joy%20Randolph206"
+      },
+      {
+        "name": "Ryan Gosling",
+        "character": "Ken",
+        "profile_path": "https://i.pravatar.cc/300?u=Ryan%20Gosling206"
+      },
+      {
+        "name": "Oscar Isaac",
+        "character": "Duke Leto",
+        "profile_path": "https://i.pravatar.cc/300?u=Oscar%20Isaac206"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=pVsOZXrO2o0"
+  },
+  {
+    "id": 207,
+    "title": "Weapons",
+    "original_title": "Weapons",
+    "overview": "A horror mystery surrounding small-town disappearances.",
+    "poster_path": "/bMRJ5PJVjvaqqs99GMQh5RiwIZO.jpg",
+    "backdrop_path": "/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg",
+    "release_date": "2026-08-08",
+    "vote_average": 0,
+    "vote_count": 4200,
+    "popularity": 3100,
+    "genre_ids": [
+      27,
+      9648
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Post-production",
+    "tagline": "Everyone has a weapon.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "Weapons delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Hayley Atwell",
+        "character": "Grace",
+        "profile_path": "https://i.pravatar.cc/300?u=Hayley%20Atwell207"
+      },
+      {
+        "name": "Dominic Sessa",
+        "character": "Angus Tully",
+        "profile_path": "https://i.pravatar.cc/300?u=Dominic%20Sessa207"
+      },
+      {
+        "name": "America Ferrera",
+        "character": "Gloria",
+        "profile_path": "https://i.pravatar.cc/300?u=America%20Ferrera207"
+      },
+      {
+        "name": "Florence Pugh",
+        "character": "Princess Irulan",
+        "profile_path": "https://i.pravatar.cc/300?u=Florence%20Pugh207"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=wKiI0RvKgSe"
+  },
+  {
+    "id": 208,
+    "title": "The Bride!",
+    "original_title": "The Bride!",
+    "overview": "A gothic romance reimagined for modern audiences.",
+    "poster_path": "/a3q8NkM8uTh9E23VsbUOdDSbBeN.jpg",
+    "backdrop_path": "/dsGwCEO8tda4FlgHKvL95f0oQbH.jpg",
+    "release_date": "2026-03-06",
+    "vote_average": 0,
+    "vote_count": 3100,
+    "popularity": 2800,
+    "genre_ids": [
+      14,
+      10749
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Post-production",
+    "tagline": "Love never dies.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "The Bride! delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Ana de Armas",
+        "character": "Dani Miranda",
+        "profile_path": "https://i.pravatar.cc/300?u=Ana%20de%20Armas208"
+      },
+      {
+        "name": "Lily Gladstone",
+        "character": "Mollie Burkhart",
+        "profile_path": "https://i.pravatar.cc/300?u=Lily%20Gladstone208"
+      },
+      {
+        "name": "Michael Cera",
+        "character": "Allan",
+        "profile_path": "https://i.pravatar.cc/300?u=Michael%20Cera208"
+      },
+      {
+        "name": "Austin Butler",
+        "character": "Feyd-Rautha",
+        "profile_path": "https://i.pravatar.cc/300?u=Austin%20Butler208"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=Shah8AN253Y"
+  },
+  {
+    "id": 209,
+    "title": "Coyote vs. Acme",
+    "original_title": "Coyote vs. Acme",
+    "overview": "Wile E. Coyote sues the Acme Corporation.",
+    "poster_path": "/xLs4LBtGhNhgp9kmBQ8YV2l19Gz.jpg",
+    "backdrop_path": "/nDRtTdYd4DU3GhZFwJ2fjdIRhQF.jpg",
+    "release_date": "2026-06-12",
+    "vote_average": 0,
+    "vote_count": 28000,
+    "popularity": 7600,
+    "genre_ids": [
+      16,
+      35
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Post-production",
+    "tagline": "Order in the court.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "Coyote vs. Acme delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Ryan Gosling",
+        "character": "Colt Seavers",
+        "profile_path": "https://i.pravatar.cc/300?u=Ryan%20Gosling209"
+      },
+      {
+        "name": "Leonardo DiCaprio",
+        "character": "Ernest Burkhart",
+        "profile_path": "https://i.pravatar.cc/300?u=Leonardo%20DiCaprio209"
+      },
+      {
+        "name": "Ke Huy Quan",
+        "character": "Ode to Joy narrator",
+        "profile_path": "https://i.pravatar.cc/300?u=Ke%20Huy%20Quan209"
+      },
+      {
+        "name": "Cillian Murphy",
+        "character": "Robert Oppenheimer",
+        "profile_path": "https://i.pravatar.cc/300?u=Cillian%20Murphy209"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=uqmAj8dox64"
+  },
+  {
+    "id": 210,
+    "title": "Anaconda",
+    "original_title": "Anaconda",
+    "overview": "A team ventures deep into the rainforest.",
+    "poster_path": "/7dcqu4GybJw5BU36LwyJKcK6OVi.jpg",
+    "backdrop_path": "/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg",
+    "release_date": "2026-12-25",
+    "vote_average": 0,
+    "vote_count": 5600,
+    "popularity": 3400,
+    "genre_ids": [
+      28,
+      27
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Pre-production",
+    "tagline": "Fear coils.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "Anaconda delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Emily Blunt",
+        "character": "Jody Moreno",
+        "profile_path": "https://i.pravatar.cc/300?u=Emily%20Blunt210"
+      },
+      {
+        "name": "Robert De Niro",
+        "character": "William Hale",
+        "profile_path": "https://i.pravatar.cc/300?u=Robert%20De%20Niro210"
+      },
+      {
+        "name": "Timothée Chalamet",
+        "character": "Paul Atreides",
+        "profile_path": "https://i.pravatar.cc/300?u=Timoth%C3%A9e%20Chalamet210"
+      },
+      {
+        "name": "Emily Blunt",
+        "character": "Kitty Oppenheimer",
+        "profile_path": "https://i.pravatar.cc/300?u=Emily%20Blunt210"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=yAZxx8t9zig"
+  },
+  {
+    "id": 211,
+    "title": "Project Hail Mary",
+    "original_title": "Project Hail Mary",
+    "overview": "A lone astronaut races to save humanity.",
+    "poster_path": "/blKDM1GW7ZOzqDxJzKsNeVj7h0O.jpg",
+    "backdrop_path": "/g6wufgtycJCP508tlC3crSYFCgC.jpg",
+    "release_date": "2026-03-20",
+    "vote_average": 0,
+    "vote_count": 18000,
+    "popularity": 8900,
+    "genre_ids": [
+      878,
+      12
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Filming",
+    "tagline": "Science is the only hope.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "Project Hail Mary delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Pedro Pascal",
+        "character": "Tom Ryder",
+        "profile_path": "https://i.pravatar.cc/300?u=Pedro%20Pascal211"
+      },
+      {
+        "name": "Jesse Plemons",
+        "character": "Tom White",
+        "profile_path": "https://i.pravatar.cc/300?u=Jesse%20Plemons211"
+      },
+      {
+        "name": "Zendaya",
+        "character": "Chani",
+        "profile_path": "https://i.pravatar.cc/300?u=Zendaya211"
+      },
+      {
+        "name": "Matt Damon",
+        "character": "Leslie Groves",
+        "profile_path": "https://i.pravatar.cc/300?u=Matt%20Damon211"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=Way9Dexny3w"
+  },
+  {
+    "id": 212,
+    "title": "Mortal Kombat II",
+    "original_title": "Mortal Kombat II",
+    "overview": "Earthrealm’s champions fight for survival.",
+    "poster_path": "/2J5eeroLDY0d45mVjpuGhcLZs3W.jpg",
+    "backdrop_path": "/6SLyu9ygASsrOqkCpjAwtyG9PWW.jpg",
+    "release_date": "2026-10-24",
+    "vote_average": 0,
+    "vote_count": 14000,
+    "popularity": 5500,
+    "genre_ids": [
+      28,
+      14
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Post-production",
+    "tagline": "Finish them.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "Mortal Kombat II delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Paul Giamatti",
+        "character": "Paul Hunham",
+        "profile_path": "https://i.pravatar.cc/300?u=Paul%20Giamatti212"
+      },
+      {
+        "name": "Margot Robbie",
+        "character": "Barbie",
+        "profile_path": "https://i.pravatar.cc/300?u=Margot%20Robbie212"
+      },
+      {
+        "name": "Rebecca Ferguson",
+        "character": "Lady Jessica",
+        "profile_path": "https://i.pravatar.cc/300?u=Rebecca%20Ferguson212"
+      },
+      {
+        "name": "Robert Downey Jr.",
+        "character": "Lewis Strauss",
+        "profile_path": "https://i.pravatar.cc/300?u=Robert%20Downey%20Jr.212"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=6RRLLCv2srQ"
+  },
+  {
+    "id": 213,
+    "title": "Now You See Me: Now You Don’t",
+    "original_title": "Now You See Me: Now You Don’t",
+    "overview": "The Four Horsemen return for their most dangerous illusion yet.",
+    "poster_path": "/oD3Eey4e4Z259XLm3eD3WGcoJAh.jpg",
+    "backdrop_path": "/dHSz0tSFuO2CsXJ1CApSauP9Ncl.jpg",
+    "release_date": "2026-11-13",
+    "vote_average": 0,
+    "vote_count": 7200,
+    "popularity": 4100,
+    "genre_ids": [
+      80,
+      9648
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Pre-production",
+    "tagline": "Look closer.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "Now You See Me: Now You Don’t delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Da’Vine Joy Randolph",
+        "character": "Mary Lamb",
+        "profile_path": "https://i.pravatar.cc/300?u=Da%E2%80%99Vine%20Joy%20Randolph213"
+      },
+      {
+        "name": "Ryan Gosling",
+        "character": "Ken",
+        "profile_path": "https://i.pravatar.cc/300?u=Ryan%20Gosling213"
+      },
+      {
+        "name": "Oscar Isaac",
+        "character": "Duke Leto",
+        "profile_path": "https://i.pravatar.cc/300?u=Oscar%20Isaac213"
+      },
+      {
+        "name": "Tom Cruise",
+        "character": "Ethan Hunt",
+        "profile_path": "https://i.pravatar.cc/300?u=Tom%20Cruise213"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=eWc47_ocZb0"
+  },
+  {
+    "id": 214,
+    "title": "Hoppers",
+    "original_title": "Hoppers",
+    "overview": "An animated adventure across impossible worlds.",
+    "poster_path": "/ylBW1S3xbpOH1arTCaNnYPGgPX2.jpg",
+    "backdrop_path": "/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg",
+    "release_date": "2026-03-06",
+    "vote_average": 0,
+    "vote_count": 2100,
+    "popularity": 2200,
+    "genre_ids": [
+      16,
+      12
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "Post-production",
+    "tagline": "Hop into the unknown.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "Hoppers delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Dominic Sessa",
+        "character": "Angus Tully",
+        "profile_path": "https://i.pravatar.cc/300?u=Dominic%20Sessa214"
+      },
+      {
+        "name": "America Ferrera",
+        "character": "Gloria",
+        "profile_path": "https://i.pravatar.cc/300?u=America%20Ferrera214"
+      },
+      {
+        "name": "Florence Pugh",
+        "character": "Princess Irulan",
+        "profile_path": "https://i.pravatar.cc/300?u=Florence%20Pugh214"
+      },
+      {
+        "name": "Hayley Atwell",
+        "character": "Grace",
+        "profile_path": "https://i.pravatar.cc/300?u=Hayley%20Atwell214"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=d9MyW72ELq0"
+  },
+  {
+    "id": 215,
+    "title": "The Sheep Detectives",
+    "original_title": "The Sheep Detectives",
+    "overview": "Two woolly investigators crack barnyard mysteries.",
+    "poster_path": "/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg",
+    "backdrop_path": "/9n2tJBplPbgR2ca05hS5CKXwP2c.jpg",
+    "release_date": "2026-09-18",
+    "vote_average": 0,
+    "vote_count": 900,
+    "popularity": 1500,
+    "genre_ids": [
+      16,
+      35
+    ],
+    "adult": false,
+    "original_language": "en",
+    "runtime": 0,
+    "status": "In development",
+    "tagline": "Ewe won’t believe it.",
+    "reviews": [
+      {
+        "author": "Rotten Tomatoes–style critic",
+        "rating": 0.3,
+        "content": "The Sheep Detectives delivers the spectacle audiences expect while keeping character stakes grounded. A rare blockbuster that earns its runtime."
+      },
+      {
+        "author": "IMDb-style viewer",
+        "rating": -0.2,
+        "content": "Saw it twice. Sound design and pacing are excellent; a few plot beats feel rushed but the cast chemistry carries the third act."
+      }
+    ],
+    "cast": [
+      {
+        "name": "Lily Gladstone",
+        "character": "Mollie Burkhart",
+        "profile_path": "https://i.pravatar.cc/300?u=Lily%20Gladstone215"
+      },
+      {
+        "name": "Michael Cera",
+        "character": "Allan",
+        "profile_path": "https://i.pravatar.cc/300?u=Michael%20Cera215"
+      },
+      {
+        "name": "Austin Butler",
+        "character": "Feyd-Rautha",
+        "profile_path": "https://i.pravatar.cc/300?u=Austin%20Butler215"
+      },
+      {
+        "name": "Ana de Armas",
+        "character": "Dani Miranda",
+        "profile_path": "https://i.pravatar.cc/300?u=Ana%20de%20Armas215"
+      }
+    ],
+    "trailer": "https://www.youtube.com/watch?v=L9W88mbtZxw"
+  }
+]
