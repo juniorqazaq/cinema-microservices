@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, sanat]
+  pull_request:
+    branches: [main, master, sanat]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: user-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22.x"
+      - name: Go test
+        run: go test ./... -race -count=1
+      - name: Coverage
+        run: |
+          go test ./... -race -count=1 -coverprofile=coverage.out
+          go tool cover -func=coverage.out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage.out
+          path: user-service/coverage.out
+
+  fmt:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: user-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22.x"
+      - name: Verify gofmt
+        run: |
+          test -z "$(gofmt -l cmd internal tests 2>/dev/null || true)"
+      - name: Verify goimports
+        run: |
+          go install golang.org/x/tools/cmd/goimports@latest
+          test -z "$(goimports -l cmd internal tests 2>/dev/null || true)"
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22.x"
+      - uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.59.1
+          args: --timeout=5m
+          working-directory: user-service
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Docker build
+        working-directory: user-service
+        run: docker build -t user-service:ci .
