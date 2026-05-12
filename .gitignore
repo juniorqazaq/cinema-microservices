@@ -1,0 +1,7 @@
+**/.env
+**/bin/
+**/.bin/
+**/coverage.out
+coverage.html
+.DS_Store
+.idea/
