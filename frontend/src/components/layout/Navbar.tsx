@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import type { Location, NavigateFunction, SetURLSearchParams } from 'react-router-dom'
 import {
   NavLink,
   useLocation,
@@ -16,24 +17,18 @@ function initials(email: string): string {
   return (clean.slice(0, 2) || email.slice(0, 2)).toUpperCase()
 }
 
-export function Navbar() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [params, setParams] = useSearchParams()
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
-  const user = useAuthStore((s) => s.user)
-  const { logoutMutation } = useAuth()
-  const qParam = params.get('q') ?? ''
+function NavbarMoviesSearch({
+  qParam,
+  location,
+  navigate,
+  setParams,
+}: {
+  qParam: string
+  location: Location
+  navigate: NavigateFunction
+  setParams: SetURLSearchParams
+}) {
   const [searchVal, setSearchVal] = useState(qParam)
-
-  useEffect(() => {
-    setSearchVal(qParam)
-  }, [qParam])
-
-  async function handleLogout() {
-    await logoutMutation.mutateAsync()
-    navigate('/movies')
-  }
 
   function applySearch(raw: string) {
     const q = raw.trim()
@@ -46,6 +41,47 @@ export function Navbar() {
         search: q ? `?q=${encodeURIComponent(q)}` : '',
       })
     }
+  }
+
+  return (
+    <form
+      className="min-w-0 flex-1"
+      onSubmit={(e) => {
+        e.preventDefault()
+        applySearch(searchVal)
+      }}
+    >
+      <div className="relative w-full">
+        <Search
+          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+          aria-hidden
+        />
+        <input
+          type="search"
+          name="q"
+          placeholder="Search movies…"
+          value={searchVal}
+          onChange={(e) => setSearchVal(e.target.value)}
+          className="w-full rounded-full border border-border2 bg-card py-2 pl-9 pr-4 text-body text-white outline-none transition-colors placeholder:text-muted focus:border-accent"
+          aria-label="Search movies"
+        />
+      </div>
+    </form>
+  )
+}
+
+export function Navbar() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [params, setParams] = useSearchParams()
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const user = useAuthStore((s) => s.user)
+  const { logoutMutation } = useAuth()
+  const qParam = params.get('q') ?? ''
+
+  async function handleLogout() {
+    await logoutMutation.mutateAsync()
+    navigate('/movies')
   }
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
@@ -148,29 +184,13 @@ export function Navbar() {
             ) : null}
           </nav>
 
-          <form
-            className="min-w-0 flex-1"
-            onSubmit={(e) => {
-              e.preventDefault()
-              applySearch(searchVal)
-            }}
-          >
-            <div className="relative w-full">
-              <Search
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
-                aria-hidden
-              />
-              <input
-                type="search"
-                name="q"
-                placeholder="Search movies…"
-                value={searchVal}
-                onChange={(e) => setSearchVal(e.target.value)}
-                className="w-full rounded-full border border-border2 bg-card py-2 pl-9 pr-4 text-body text-white outline-none transition-colors placeholder:text-muted focus:border-accent"
-                aria-label="Search movies"
-              />
-            </div>
-          </form>
+          <NavbarMoviesSearch
+            key={qParam}
+            qParam={qParam}
+            location={location}
+            navigate={navigate}
+            setParams={setParams}
+          />
         </div>
       </div>
     </header>

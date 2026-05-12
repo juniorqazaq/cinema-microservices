@@ -20,6 +20,8 @@ import { formatDate } from '../../utils/format'
 import { getErrorMessage } from '../../utils/errorHandler'
 import type { Booking, Session } from '../../types'
 
+const EMPTY_BOOKINGS: Booking[] = []
+
 const passwordSchema = z
   .object({
     old_password: z.string().min(1, 'Required'),
@@ -53,10 +55,11 @@ export function ProfilePage() {
   const [tab, setTab] = useState<Tab>('upcoming')
   const [pwOpen, setPwOpen] = useState(false)
 
-  const bookings = historyQuery.data ?? []
+  const bookings = historyQuery.data
+  const bookingsList = bookings ?? EMPTY_BOOKINGS
 
   const sessionQueries = useQueries({
-    queries: bookings.map((b) => ({
+    queries: bookingsList.map((b) => ({
       queryKey: ['session', b.session_id],
       queryFn: () => getSession(b.session_id),
       enabled: Boolean(b.session_id) && historyQuery.isSuccess,
@@ -65,19 +68,19 @@ export function ProfilePage() {
 
   const sessionByBookingId = useMemo(() => {
     const map: Record<string, Session | undefined> = {}
-    bookings.forEach((b, i) => {
+    bookingsList.forEach((b, i) => {
       map[b.id] = sessionQueries[i]?.data
     })
     return map
-  }, [bookings, sessionQueries])
+  }, [bookingsList, sessionQueries])
 
   const filtered = useMemo(() => {
-    if (tab === 'all') return bookings
-    return bookings.filter((b) => {
+    if (tab === 'all') return bookingsList
+    return bookingsList.filter((b) => {
       const cat = bookingCategory(b, sessionByBookingId[b.id]?.start_time)
       return tab === 'upcoming' ? cat === 'upcoming' : cat === 'past'
     })
-  }, [bookings, tab, sessionByBookingId])
+  }, [bookingsList, tab, sessionByBookingId])
 
   const {
     register,
@@ -155,7 +158,7 @@ export function ProfilePage() {
             </div>
           ) : historyQuery.isError ? (
             <ErrorBanner message={getErrorMessage(historyQuery.error)} />
-          ) : bookings.length === 0 ? (
+          ) : bookingsList.length === 0 ? (
             <div className="flex flex-col items-center gap-3 py-10 text-center">
               <Ticket className="h-10 w-10 text-muted" aria-hidden />
               <p className="text-body text-muted">No tickets yet</p>

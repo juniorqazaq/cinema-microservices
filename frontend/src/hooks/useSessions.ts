@@ -1,5 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchSession, fetchSessionSeats, fetchSessions } from '../api/movies'
+import {
+  getAvailableSeats,
+  getSession,
+  getSessions,
+} from '../api/movies'
 import type { SessionsListParams } from '../types'
 
 export function useSessions(
@@ -8,7 +12,7 @@ export function useSessions(
 ) {
   return useQuery({
     queryKey: ['sessions', params],
-    queryFn: () => fetchSessions(params!),
+    queryFn: () => getSessions(params!),
     enabled:
       (options?.enabled ?? true) &&
       Boolean(params?.movie_id) &&
@@ -19,7 +23,7 @@ export function useSessions(
 export function useSession(id: string | undefined) {
   return useQuery({
     queryKey: ['session', id],
-    queryFn: () => fetchSession(id!),
+    queryFn: () => getSession(id!),
     enabled: Boolean(id),
   })
 }
@@ -27,7 +31,7 @@ export function useSession(id: string | undefined) {
 export function useSessionSeats(id: string | undefined) {
   return useQuery({
     queryKey: ['session', id, 'seats'],
-    queryFn: () => fetchSessionSeats(id!),
+    queryFn: () => getAvailableSeats(id!),
     enabled: Boolean(id),
   })
 }

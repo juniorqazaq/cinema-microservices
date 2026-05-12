@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { createElement } from 'react'
 import type { Movie } from '../../types'
 import { formatDuration } from '../../utils/format'
 import { genreIcon, genrePosterClass } from '../../utils/moviePresentation'
@@ -13,7 +14,6 @@ interface MovieCardProps {
 }
 
 export function MovieCard({ movie, catalogPosterUrl }: MovieCardProps) {
-  const Icon = genreIcon(movie.genre)
   const tmdb = useTmdbMovie(catalogPosterUrl ? undefined : movie)
   const poster = catalogPosterUrl
     ? posterUrl({ poster_path: catalogPosterUrl }, 'w500')
@@ -39,11 +39,11 @@ export function MovieCard({ movie, catalogPosterUrl }: MovieCardProps) {
           <div
             className={`absolute inset-0 flex items-center justify-center ${genrePosterClass(movie.genre)}`}
           >
-            <Icon
-              className="h-12 w-12 text-white/25"
-              strokeWidth={1}
-              aria-hidden="true"
-            />
+            {createElement(genreIcon(movie.genre), {
+              className: 'h-12 w-12 text-white/25',
+              strokeWidth: 1,
+              'aria-hidden': true,
+            })}
           </div>
         )}
         <div className="absolute right-2 top-2 rounded-md border border-accent bg-accent px-2 py-0.5 text-[11px] font-medium text-white">

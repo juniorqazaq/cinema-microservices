@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { addDays, eachDayOfInterval, format, parseISO } from 'date-fns'
+import { createElement } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useMemo, useState } from 'react'
 import { useQueries } from '@tanstack/react-query'
@@ -12,11 +13,12 @@ import { Spinner } from '../../components/ui/Spinner'
 import { getErrorMessage, mapApiError } from '../../utils/errorHandler'
 import { formatDuration } from '../../utils/format'
 import { genreIcon, genrePosterClass } from '../../utils/moviePresentation'
-import { fetchHall } from '../../api/movies'
+import { getHall } from '../../api/movies'
 import { tmdbImg } from '../../api/tmdb'
 import { useBookingStore } from '../../store/bookingStore'
 import { getMovieById } from '../../lib/movieService'
 import { CatalogMovieDetail } from '../../components/movie/CatalogMovieDetail'
+import type { Session } from '../../types'
 
 const buyTicketBtnClass =
   'inline-flex min-w-[140px] items-center justify-center rounded-lg border border-accent bg-accent px-4 py-2.5 text-body font-semibold text-white shadow-sm transition-colors hover:border-accentHover hover:bg-accentHover'
@@ -54,17 +56,18 @@ export function MovieDetailPage() {
     },
   )
 
-  const sessions = sessionsQuery.data ?? []
+  const sessions = sessionsQuery.data
+  const sessionRows = useMemo(() => sessions ?? [], [sessions])
   const uniqueHallIds = useMemo(
-    () => Array.from(new Set(sessions.map((s) => s.hall_id))),
-    [sessions],
+    () => Array.from(new Set(sessionRows.map((s) => s.hall_id))),
+    [sessionRows],
   )
 
   const hallQueries = useQueries({
     queries: uniqueHallIds.map((hallId) => ({
       queryKey: ['hall', hallId],
-      queryFn: () => fetchHall(hallId),
-      enabled: Boolean(hallId) && sessions.length > 0,
+      queryFn: () => getHall(hallId),
+      enabled: Boolean(hallId) && sessionRows.length > 0,
     })),
   })
 
@@ -114,15 +117,14 @@ export function MovieDetailPage() {
   const movie = movieQuery.data!
   const backdrop = tmdbImg(tmdb.data?.backdrop_path ?? null, 'w780')
   const posterTmdb = tmdbImg(tmdb.data?.poster_path ?? null, 'w500')
-  const Icon = genreIcon(movie.genre)
   const year = movie.created_at
     ? format(parseISO(movie.created_at), 'yyyy')
     : '—'
 
-  async function handleSessionPick(session: (typeof sessions)[0]) {
+  async function handleSessionPick(session: Session) {
     setMovie(movie)
     setSession(session)
-    const hall = await fetchHall(session.hall_id)
+    const hall = await getHall(session.hall_id)
     setHall(hall)
     setStep(3)
     navigate('/booking')
@@ -165,11 +167,11 @@ export function MovieDetailPage() {
                   <div
                     className={`flex h-full w-full items-center justify-center ${genrePosterClass(movie.genre)}`}
                   >
-                    <Icon
-                      className="h-10 w-10 text-white/30"
-                      strokeWidth={1}
-                      aria-hidden
-                    />
+                    {createElement(genreIcon(movie.genre), {
+                      className: 'h-10 w-10 text-white/30',
+                      strokeWidth: 1,
+                      'aria-hidden': true,
+                    })}
                   </div>
                 )}
               </div>
@@ -237,7 +239,7 @@ export function MovieDetailPage() {
             </p>
           ) : (
             <SessionPicker
-              sessions={sessions}
+              sessions={sessionRows}
               hallLabel={(hid) => hallsById[hid]?.name ?? hid.slice(0, 6)}
               onSelect={(s) => void handleSessionPick(s)}
             />

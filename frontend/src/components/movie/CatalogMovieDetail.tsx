@@ -11,13 +11,15 @@ export function CatalogMovieDetail({ movie }: { movie: CatalogMovie }) {
   const year = movie.release_date
     ? format(parseISO(`${movie.release_date}T12:00:00`), 'yyyy')
     : '—'
-  let trailerId = ''
-  try {
-    const u = new URL(movie.trailer)
-    trailerId = u.searchParams.get('v') ?? ''
-  } catch {
-    trailerId = ''
-  }
+
+  const trailerYoutubeId = (() => {
+    if (!movie.trailer) return ''
+    try {
+      return new URL(movie.trailer).searchParams.get('v') ?? ''
+    } catch {
+      return ''
+    }
+  })()
 
   return (
     <div className="flex flex-col gap-8">
@@ -120,13 +122,13 @@ export function CatalogMovieDetail({ movie }: { movie: CatalogMovie }) {
         </ul>
       </section>
 
-      {trailerId ? (
+      {trailerYoutubeId ? (
         <section className="overflow-hidden rounded-xl border border-border bg-card">
           <div className="aspect-video w-full max-w-3xl">
             <iframe
               title="Trailer"
               className="h-full w-full"
-              src={`https://www.youtube-nocookie.com/embed/${trailerId}`}
+              src={`https://www.youtube-nocookie.com/embed/${trailerYoutubeId}`}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
