@@ -1,0 +1,26 @@
+mode: set
+booking-service/internal/usecase/booking.go:29.100,35.2 1 0
+booking-service/internal/usecase/booking.go:37.121,48.16 3 0
+booking-service/internal/usecase/booking.go:48.16,50.3 1 0
+booking-service/internal/usecase/booking.go:51.2,54.16 3 0
+booking-service/internal/usecase/booking.go:54.16,56.3 1 0
+booking-service/internal/usecase/booking.go:58.2,68.16 3 0
+booking-service/internal/usecase/booking.go:68.16,70.3 1 0
+booking-service/internal/usecase/booking.go:72.2,72.39 1 0
+booking-service/internal/usecase/booking.go:72.39,74.3 1 0
+booking-service/internal/usecase/booking.go:76.2,76.21 1 0
+booking-service/internal/usecase/booking.go:79.79,81.16 2 0
+booking-service/internal/usecase/booking.go:81.16,83.3 1 0
+booking-service/internal/usecase/booking.go:84.2,87.16 3 0
+booking-service/internal/usecase/booking.go:87.16,89.3 1 0
+booking-service/internal/usecase/booking.go:91.2,96.16 3 0
+booking-service/internal/usecase/booking.go:96.16,98.3 1 0
+booking-service/internal/usecase/booking.go:100.2,100.23 1 0
+booking-service/internal/usecase/payment.go:18.124,24.2 1 0
+booking-service/internal/usecase/payment.go:26.136,37.16 4 0
+booking-service/internal/usecase/payment.go:37.16,39.3 1 0
+booking-service/internal/usecase/payment.go:41.2,42.16 2 0
+booking-service/internal/usecase/payment.go:42.16,44.3 1 0
+booking-service/internal/usecase/payment.go:46.2,54.16 3 0
+booking-service/internal/usecase/payment.go:54.16,56.3 1 0
+booking-service/internal/usecase/payment.go:58.2,58.21 1 0
