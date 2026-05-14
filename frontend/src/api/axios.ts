@@ -165,7 +165,6 @@ export async function del<T>(url: string): Promise<T> {
   return {} as T
 }
 
-/** Auth endpoints use rawClient (no Bearer on register/login). */
 export async function postAuth<T>(
   path: string,
   body: Record<string, unknown>,

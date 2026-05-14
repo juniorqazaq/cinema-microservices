@@ -41,8 +41,8 @@ services:
       context: ./notification-service
     environment:
       NATS_URL: nats://nats:4222
-      SMTP_USER: "medinanurbek@gmail.com" # ЗАМЕНИТЕ НА ВАШ
-      SMTP_PASS: "your-app-password" # ЗАМЕНИТЕ НА ВАШ
+      SMTP_USER: "medinanurbek@gmail.com"
+      SMTP_PASS: "your-app-password"
     depends_on:
       nats:
         condition: service_started

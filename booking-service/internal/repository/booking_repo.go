@@ -18,7 +18,6 @@ func NewBookingRepository(pool *pgxpool.Pool) domain.BookingRepository {
 }
 
 func (r *bookingRepo) Create(ctx context.Context, tx pgx.Tx, booking *domain.Booking) error {
-	// 1. SELECT id FROM seats WHERE id=$1 AND is_available=true FOR UPDATE
 	var seatID string
 	err := tx.QueryRow(ctx, "SELECT id FROM seats WHERE id=$1 AND is_available=true FOR UPDATE", booking.SeatID).Scan(&seatID)
 	if err != nil {
@@ -28,7 +27,6 @@ func (r *bookingRepo) Create(ctx context.Context, tx pgx.Tx, booking *domain.Boo
 		return err
 	}
 
-	// 3. INSERT INTO bookings (...)
 	_, err = tx.Exec(ctx,
 		"INSERT INTO bookings (id, user_id, session_id, seat_id, status, created_at) VALUES ($1, $2, $3, $4, $5, $6)",
 		booking.ID, booking.UserID, booking.SessionID, booking.SeatID, booking.Status, booking.CreatedAt,
@@ -37,13 +35,11 @@ func (r *bookingRepo) Create(ctx context.Context, tx pgx.Tx, booking *domain.Boo
 		return err
 	}
 
-	// 4. UPDATE seats SET is_available=false WHERE id=$1
 	_, err = tx.Exec(ctx, "UPDATE seats SET is_available=false WHERE id=$1", booking.SeatID)
 	return err
 }
 
 func (r *bookingRepo) Cancel(ctx context.Context, tx pgx.Tx, id string) error {
-	// 1. Проверить текущий статус — если уже cancelled, вернуть domain.ErrAlreadyCancelled
 	var status string
 	var seatID string
 	err := tx.QueryRow(ctx, "SELECT status, seat_id FROM bookings WHERE id=$1 FOR UPDATE", id).Scan(&status, &seatID)
@@ -58,13 +54,11 @@ func (r *bookingRepo) Cancel(ctx context.Context, tx pgx.Tx, id string) error {
 		return domain.ErrAlreadyCancelled
 	}
 
-	// 2. UPDATE bookings SET status='cancelled' WHERE id=$1
 	_, err = tx.Exec(ctx, "UPDATE bookings SET status=$1 WHERE id=$2", domain.StatusCancelled, id)
 	if err != nil {
 		return err
 	}
 
-	// 3. UPDATE seats SET is_available=true WHERE seat_id из bookings
 	_, err = tx.Exec(ctx, "UPDATE seats SET is_available=true WHERE id=$1", seatID)
 	return err
 }
@@ -158,6 +152,24 @@ func (r *bookingRepo) GetStats(ctx context.Context) (total, confirmed, cancelled
 	`
 	err = r.pool.QueryRow(ctx, query, domain.StatusConfirmed, domain.StatusCancelled).Scan(&total, &confirmed, &cancelled)
 	return
+}
+
+func (r *bookingRepo) CountAll(ctx context.Context) (int64, error) {
+	var n int64
+	err := r.pool.QueryRow(ctx, "SELECT COUNT(*) FROM bookings").Scan(&n)
+	return n, err
+}
+
+func (r *bookingRepo) IsSeatAvailable(ctx context.Context, seatID string) (bool, error) {
+	var avail bool
+	err := r.pool.QueryRow(ctx, "SELECT is_available FROM seats WHERE id = $1", seatID).Scan(&avail)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
+	return avail, nil
 }
 
 func (r *bookingRepo) UpdateStatus(ctx context.Context, id, status string) error {

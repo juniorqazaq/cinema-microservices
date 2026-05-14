@@ -1,4 +1,5 @@
 import { post, postAuth, postTokens, put } from './axios'
+import { useAuthStore } from '../store/authStore'
 import type { AuthTokens, RefreshResponse } from '../types'
 
 export async function registerUser(
@@ -16,7 +17,11 @@ export async function loginUser(
 }
 
 export async function logoutUser(): Promise<Record<string, never>> {
-  return post<Record<string, never>>('/auth/logout', {})
+  const { accessToken, refreshToken } = useAuthStore.getState()
+  return post<Record<string, never>>('/auth/logout', {
+    access_token: accessToken,
+    refresh_token: refreshToken,
+  })
 }
 
 export async function refreshToken(

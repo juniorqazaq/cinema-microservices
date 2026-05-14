@@ -24,7 +24,9 @@ export function userFromAccessToken(
   emailFallback?: string,
 ): User {
   const p = decodeJwtPayload(accessToken) ?? {}
-  const role = p.role === 'admin' ? 'admin' : 'user'
+  const raw = String(p.role ?? '')
+  const role =
+    raw === 'ADMIN' || raw.toLowerCase() === 'admin' ? 'admin' : 'user'
   const id = String(p.sub ?? p.user_id ?? p.id ?? '')
   const email = String(p.email ?? emailFallback ?? '')
   const bal = p.balance

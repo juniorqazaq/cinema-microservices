@@ -34,6 +34,8 @@ func (p *NATSPublisher) PublishBookingCreated(ctx context.Context, event *Bookin
 
 type BookingCancelledEvent struct {
 	BookingID string `json:"booking_id"`
+	Email     string `json:"email,omitempty"`
+	Date      string `json:"date,omitempty"`
 }
 
 func (p *NATSPublisher) PublishBookingCancelled(ctx context.Context, event *BookingCancelledEvent) error {

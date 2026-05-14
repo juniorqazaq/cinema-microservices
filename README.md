@@ -8,6 +8,7 @@ Monorepository for a cinema booking platform: a **gRPC user and auth backend** (
 | --------- | ---- | ----------- |
 | **User service** | [`user-service/`](user-service/) | Go 1.22 gRPC API — register/login, JWT access & refresh, Redis-backed tokens, PostgreSQL persistence, health checks. Default gRPC port **50051**. |
 | **Web frontend** | [`frontend/`](frontend/) | React 18 SPA — catalog, sessions, booking UI, profile, admin. Dev server via Vite (default **5173**). |
+| **HTTP contract (gateway)** | [`GATEWAY_HTTP_CONTRACT.md`](GATEWAY_HTTP_CONTRACT.md) | Paths and gRPC mapping expected by the SPA; for the team member implementing the API gateway. |
 
 Service-specific setup, environment variables, migrations, and `grpcurl` examples live in each package README.
 

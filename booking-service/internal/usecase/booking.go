@@ -34,7 +34,7 @@ func NewBookingUseCase(repo domain.BookingRepository, pool DB, pub EventPublishe
 	}
 }
 
-func (uc *BookingUseCase) CreateBooking(ctx context.Context, userID, sessionID, seatID string) (*domain.Booking, error) {
+func (uc *BookingUseCase) CreateBooking(ctx context.Context, userID, sessionID, seatID, userEmail string) (*domain.Booking, error) {
 	booking := &domain.Booking{
 		ID:        uuid.NewString(),
 		UserID:    userID,
@@ -55,11 +55,15 @@ func (uc *BookingUseCase) CreateBooking(ctx context.Context, userID, sessionID, 
 		return nil, err
 	}
 
+	email := userEmail
+	if email == "" {
+		email = "user@example.com"
+	}
 	event := &publisher.BookingCreatedEvent{
 		BookingID: booking.ID,
 		UserID:    booking.UserID,
-		Email:     "user@example.com", // Placeholder
-		Movie:     "Unknown Movie",    // Placeholder
+		Email:     email,
+		Movie:     "Unknown Movie",
 		Seat:      seatID,
 		Time:      booking.CreatedAt.Format(time.RFC3339),
 	}
@@ -76,7 +80,7 @@ func (uc *BookingUseCase) CreateBooking(ctx context.Context, userID, sessionID, 
 	return booking, nil
 }
 
-func (uc *BookingUseCase) CancelBooking(ctx context.Context, id string) error {
+func (uc *BookingUseCase) CancelBooking(ctx context.Context, id, userEmail string) error {
 	tx, err := uc.pool.Begin(ctx)
 	if err != nil {
 		return err
@@ -90,6 +94,8 @@ func (uc *BookingUseCase) CancelBooking(ctx context.Context, id string) error {
 
 	event := &publisher.BookingCancelledEvent{
 		BookingID: id,
+		Email:     userEmail,
+		Date:      time.Now().UTC().Format(time.RFC3339),
 	}
 
 	err = uc.publisher.PublishBookingCancelled(ctx, event)

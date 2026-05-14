@@ -32,7 +32,7 @@ func TestCreateBooking_Success(t *testing.T) {
 	mockRepo.EXPECT().Create(ctx, mockTx, gomock.Any()).Return(nil)
 	mockPublisher.EXPECT().PublishBookingCreated(ctx, gomock.Any()).Return(nil)
 
-	booking, err := uc.CreateBooking(ctx, "user-1", "session-1", "seat-1")
+	booking, err := uc.CreateBooking(ctx, "user-1", "session-1", "seat-1", "")
 
 	assert.NoError(t, err)
 	assert.NotNil(t, booking)
@@ -56,11 +56,11 @@ func TestCreateBooking_SeatTaken(t *testing.T) {
 
 	// repo returns ErrSeatTaken
 	mockRepo.EXPECT().Create(ctx, mockTx, gomock.Any()).Return(domain.ErrSeatTaken)
-	
+
 	// Publisher should NOT be called
 	mockPublisher.EXPECT().PublishBookingCreated(gomock.Any(), gomock.Any()).Times(0)
 
-	booking, err := uc.CreateBooking(ctx, "user-1", "session-1", "seat-1")
+	booking, err := uc.CreateBooking(ctx, "user-1", "session-1", "seat-1", "")
 
 	assert.ErrorIs(t, err, domain.ErrSeatTaken)
 	assert.Nil(t, booking)
@@ -85,7 +85,7 @@ func TestCancelBooking(t *testing.T) {
 	mockRepo.EXPECT().Cancel(ctx, mockTx, "booking-1").Return(nil)
 	mockPublisher.EXPECT().PublishBookingCancelled(ctx, gomock.Any()).Return(nil).Times(1)
 
-	err := uc.CancelBooking(ctx, "booking-1")
+	err := uc.CancelBooking(ctx, "booking-1", "")
 
 	assert.NoError(t, err)
 }
@@ -130,7 +130,7 @@ func TestCreateBooking_NATSFail(t *testing.T) {
 	mockRepo.EXPECT().Create(ctx, mockTx, gomock.Any()).Return(nil)
 	mockPublisher.EXPECT().PublishBookingCreated(ctx, gomock.Any()).Return(errors.New("nats down"))
 
-	booking, err := uc.CreateBooking(ctx, "user-1", "session-1", "seat-1")
+	booking, err := uc.CreateBooking(ctx, "user-1", "session-1", "seat-1", "")
 
 	assert.Error(t, err)
 	assert.Equal(t, "nats down", err.Error())

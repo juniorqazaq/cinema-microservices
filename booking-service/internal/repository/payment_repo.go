@@ -84,6 +84,12 @@ func (r *paymentRepo) List(ctx context.Context, limit, offset int) ([]*domain.Pa
 	return payments, nil
 }
 
+func (r *paymentRepo) CountAll(ctx context.Context) (int64, error) {
+	var n int64
+	err := r.pool.QueryRow(ctx, "SELECT COUNT(*) FROM payments").Scan(&n)
+	return n, err
+}
+
 func (r *paymentRepo) UpdateStatus(ctx context.Context, id, status string) error {
 	var query string
 	if status == domain.PaymentStatusPaid {

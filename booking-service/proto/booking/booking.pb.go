@@ -186,6 +186,7 @@ type CreateBookingRequest struct {
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	SessionId     string                 `protobuf:"bytes,2,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	SeatId        string                 `protobuf:"bytes,3,opt,name=seat_id,json=seatId,proto3" json:"seat_id,omitempty"`
+	UserEmail     string                 `protobuf:"bytes,4,opt,name=user_email,json=userEmail,proto3" json:"user_email,omitempty"` // optional, for notification emails
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -237,6 +238,13 @@ func (x *CreateBookingRequest) GetSessionId() string {
 func (x *CreateBookingRequest) GetSeatId() string {
 	if x != nil {
 		return x.SeatId
+	}
+	return ""
+}
+
+func (x *CreateBookingRequest) GetUserEmail() string {
+	if x != nil {
+		return x.UserEmail
 	}
 	return ""
 }
@@ -464,6 +472,7 @@ func (x *ListUserBookingsResponse) GetBookings() []*Booking {
 type CancelBookingRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	BookingId     string                 `protobuf:"bytes,1,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
+	UserEmail     string                 `protobuf:"bytes,2,opt,name=user_email,json=userEmail,proto3" json:"user_email,omitempty"` // optional, for notification emails
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -501,6 +510,13 @@ func (*CancelBookingRequest) Descriptor() ([]byte, []int) {
 func (x *CancelBookingRequest) GetBookingId() string {
 	if x != nil {
 		return x.BookingId
+	}
+	return ""
+}
+
+func (x *CancelBookingRequest) GetUserEmail() string {
+	if x != nil {
+		return x.UserEmail
 	}
 	return ""
 }
@@ -553,6 +569,7 @@ type ConfirmPaymentRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	BookingId     string                 `protobuf:"bytes,1,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
 	Amount        float64                `protobuf:"fixed64,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	UserEmail     string                 `protobuf:"bytes,3,opt,name=user_email,json=userEmail,proto3" json:"user_email,omitempty"` // optional, for payment receipt email
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -599,6 +616,13 @@ func (x *ConfirmPaymentRequest) GetAmount() float64 {
 		return x.Amount
 	}
 	return 0
+}
+
+func (x *ConfirmPaymentRequest) GetUserEmail() string {
+	if x != nil {
+		return x.UserEmail
+	}
+	return ""
 }
 
 type ConfirmPaymentResponse struct {
@@ -648,6 +672,7 @@ func (x *ConfirmPaymentResponse) GetPayment() *Payment {
 type GetPaymentRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PaymentId     string                 `protobuf:"bytes,1,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	BookingId     string                 `protobuf:"bytes,2,opt,name=booking_id,json=bookingId,proto3" json:"booking_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -685,6 +710,13 @@ func (*GetPaymentRequest) Descriptor() ([]byte, []int) {
 func (x *GetPaymentRequest) GetPaymentId() string {
 	if x != nil {
 		return x.PaymentId
+	}
+	return ""
+}
+
+func (x *GetPaymentRequest) GetBookingId() string {
+	if x != nil {
+		return x.BookingId
 	}
 	return ""
 }
@@ -1321,12 +1353,14 @@ const file_proto_booking_booking_proto_rawDesc = "" +
 	"booking_id\x18\x02 \x01(\tR\tbookingId\x12\x16\n" +
 	"\x06amount\x18\x03 \x01(\x01R\x06amount\x12\x16\n" +
 	"\x06status\x18\x04 \x01(\tR\x06status\x12\x17\n" +
-	"\apaid_at\x18\x05 \x01(\x03R\x06paidAt\"g\n" +
+	"\apaid_at\x18\x05 \x01(\x03R\x06paidAt\"\x86\x01\n" +
 	"\x14CreateBookingRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x02 \x01(\tR\tsessionId\x12\x17\n" +
-	"\aseat_id\x18\x03 \x01(\tR\x06seatId\"C\n" +
+	"\aseat_id\x18\x03 \x01(\tR\x06seatId\x12\x1d\n" +
+	"\n" +
+	"user_email\x18\x04 \x01(\tR\tuserEmail\"C\n" +
 	"\x15CreateBookingResponse\x12*\n" +
 	"\abooking\x18\x01 \x01(\v2\x10.booking.BookingR\abooking\"2\n" +
 	"\x11GetBookingRequest\x12\x1d\n" +
@@ -1337,21 +1371,27 @@ const file_proto_booking_booking_proto_rawDesc = "" +
 	"\x17ListUserBookingsRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"H\n" +
 	"\x18ListUserBookingsResponse\x12,\n" +
-	"\bbookings\x18\x01 \x03(\v2\x10.booking.BookingR\bbookings\"5\n" +
+	"\bbookings\x18\x01 \x03(\v2\x10.booking.BookingR\bbookings\"T\n" +
 	"\x14CancelBookingRequest\x12\x1d\n" +
 	"\n" +
-	"booking_id\x18\x01 \x01(\tR\tbookingId\"1\n" +
+	"booking_id\x18\x01 \x01(\tR\tbookingId\x12\x1d\n" +
+	"\n" +
+	"user_email\x18\x02 \x01(\tR\tuserEmail\"1\n" +
 	"\x15CancelBookingResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"N\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"m\n" +
 	"\x15ConfirmPaymentRequest\x12\x1d\n" +
 	"\n" +
 	"booking_id\x18\x01 \x01(\tR\tbookingId\x12\x16\n" +
-	"\x06amount\x18\x02 \x01(\x01R\x06amount\"D\n" +
+	"\x06amount\x18\x02 \x01(\x01R\x06amount\x12\x1d\n" +
+	"\n" +
+	"user_email\x18\x03 \x01(\tR\tuserEmail\"D\n" +
 	"\x16ConfirmPaymentResponse\x12*\n" +
-	"\apayment\x18\x01 \x01(\v2\x10.booking.PaymentR\apayment\"2\n" +
+	"\apayment\x18\x01 \x01(\v2\x10.booking.PaymentR\apayment\"Q\n" +
 	"\x11GetPaymentRequest\x12\x1d\n" +
 	"\n" +
-	"payment_id\x18\x01 \x01(\tR\tpaymentId\"@\n" +
+	"payment_id\x18\x01 \x01(\tR\tpaymentId\x12\x1d\n" +
+	"\n" +
+	"booking_id\x18\x02 \x01(\tR\tbookingId\"@\n" +
 	"\x12GetPaymentResponse\x12*\n" +
 	"\apayment\x18\x01 \x01(\v2\x10.booking.PaymentR\apayment\"C\n" +
 	"\x13ListPaymentsRequest\x12\x14\n" +

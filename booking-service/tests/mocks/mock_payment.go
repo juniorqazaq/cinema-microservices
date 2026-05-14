@@ -100,6 +100,21 @@ func (mr *MockPaymentRepositoryMockRecorder) List(ctx, limit, offset any) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockPaymentRepository)(nil).List), ctx, limit, offset)
 }
 
+// CountAll mocks base method.
+func (m *MockPaymentRepository) CountAll(ctx context.Context) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountAll", ctx)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountAll indicates an expected call of CountAll.
+func (mr *MockPaymentRepositoryMockRecorder) CountAll(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountAll", reflect.TypeOf((*MockPaymentRepository)(nil).CountAll), ctx)
+}
+
 // UpdateStatus mocks base method.
 func (m *MockPaymentRepository) UpdateStatus(ctx context.Context, id, status string) error {
 	m.ctrl.T.Helper()

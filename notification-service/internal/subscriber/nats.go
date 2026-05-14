@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"log"
 
-	"notification-service/internal/email"
 	"github.com/nats-io/nats.go"
+	"notification-service/internal/email"
 )
 
 type NATSSubscriber struct {
@@ -31,7 +31,7 @@ type BookingCreatedEvent struct {
 
 type BookingCancelledEvent struct {
 	BookingID string `json:"booking_id"`
-	Email     string `json:"email"` // Expecting email and date for cancellation
+	Email     string `json:"email"`
 	Date      string `json:"date"`
 }
 
@@ -47,6 +47,10 @@ func (s *NATSSubscriber) Start() error {
 		var event BookingCreatedEvent
 		if err := json.Unmarshal(msg.Data, &event); err != nil {
 			log.Printf("Error decoding booking.created event: %v", err)
+			return
+		}
+		if event.Email == "" {
+			log.Printf("booking.created: skip email (no recipient) booking_id=%s", event.BookingID)
 			return
 		}
 		if err := s.sender.SendBookingConfirmation(event.Email, event.Movie, event.Seat, event.Time); err != nil {
@@ -65,6 +69,10 @@ func (s *NATSSubscriber) Start() error {
 			log.Printf("Error decoding booking.cancelled event: %v", err)
 			return
 		}
+		if event.Email == "" {
+			log.Printf("booking.cancelled: skip email (no recipient) booking_id=%s", event.BookingID)
+			return
+		}
 		if err := s.sender.SendCancellation(event.Email, event.BookingID, event.Date); err != nil {
 			log.Printf("Failed to send booking cancellation email: %v", err)
 		} else {
@@ -79,6 +87,10 @@ func (s *NATSSubscriber) Start() error {
 		var event PaymentConfirmedEvent
 		if err := json.Unmarshal(msg.Data, &event); err != nil {
 			log.Printf("Error decoding payment.confirmed event: %v", err)
+			return
+		}
+		if event.Email == "" {
+			log.Printf("payment.confirmed: skip email (no recipient) payment_id=%s", event.PaymentID)
 			return
 		}
 		if err := s.sender.SendPaymentReceipt(event.Email, event.Amount, event.PaymentID); err != nil {

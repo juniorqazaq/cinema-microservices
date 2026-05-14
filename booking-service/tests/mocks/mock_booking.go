@@ -132,6 +132,36 @@ func (mr *MockBookingRepositoryMockRecorder) GetStats(ctx any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStats", reflect.TypeOf((*MockBookingRepository)(nil).GetStats), ctx)
 }
 
+// CountAll mocks base method.
+func (m *MockBookingRepository) CountAll(ctx context.Context) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CountAll", ctx)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CountAll indicates an expected call of CountAll.
+func (mr *MockBookingRepositoryMockRecorder) CountAll(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CountAll", reflect.TypeOf((*MockBookingRepository)(nil).CountAll), ctx)
+}
+
+// IsSeatAvailable mocks base method.
+func (m *MockBookingRepository) IsSeatAvailable(ctx context.Context, seatID string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IsSeatAvailable", ctx, seatID)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// IsSeatAvailable indicates an expected call of IsSeatAvailable.
+func (mr *MockBookingRepositoryMockRecorder) IsSeatAvailable(ctx, seatID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsSeatAvailable", reflect.TypeOf((*MockBookingRepository)(nil).IsSeatAvailable), ctx, seatID)
+}
+
 // ListByUserID mocks base method.
 func (m *MockBookingRepository) ListByUserID(ctx context.Context, userID string) ([]*domain.Booking, error) {
 	m.ctrl.T.Helper()

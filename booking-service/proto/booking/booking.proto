@@ -4,44 +4,33 @@ package booking;
 
 option go_package = "./proto/booking";
 
-// ─────────────────────────────────────────
-// Основные сообщения
-// ─────────────────────────────────────────
-
 message Booking {
-  string id         = 1;
+  string id          = 1;
   string user_id    = 2;
   string session_id = 3;
   string seat_id    = 4;
-  string status     = 5; // pending | confirmed | cancelled
-  int64  created_at = 6; // Unix timestamp
+  string status      = 5;
+  int64  created_at  = 6;
 }
 
 message Payment {
-  string id         = 1;
-  string booking_id = 2;
-  double amount     = 3;
-  string status     = 4; // pending | paid | refunded
-  int64  paid_at    = 5; // Unix timestamp, 0 если ещё не оплачено
+  string id          = 1;
+  string booking_id  = 2;
+  double amount      = 3;
+  string status      = 4;
+  int64  paid_at     = 5;
 }
 
-// ─────────────────────────────────────────
-// 1. CreateBooking
-// ─────────────────────────────────────────
-
 message CreateBookingRequest {
-  string user_id    = 1;
-  string session_id = 2;
-  string seat_id    = 3;
+  string user_id     = 1;
+  string session_id  = 2;
+  string seat_id     = 3;
+  string user_email  = 4;
 }
 
 message CreateBookingResponse {
   Booking booking = 1;
 }
-
-// ─────────────────────────────────────────
-// 2. GetBooking
-// ─────────────────────────────────────────
 
 message GetBookingRequest {
   string booking_id = 1;
@@ -51,10 +40,6 @@ message GetBookingResponse {
   Booking booking = 1;
 }
 
-// ─────────────────────────────────────────
-// 3. ListUserBookings
-// ─────────────────────────────────────────
-
 message ListUserBookingsRequest {
   string user_id = 1;
 }
@@ -63,46 +48,33 @@ message ListUserBookingsResponse {
   repeated Booking bookings = 1;
 }
 
-// ─────────────────────────────────────────
-// 4. CancelBooking
-// ─────────────────────────────────────────
-
 message CancelBookingRequest {
   string booking_id = 1;
+  string user_email = 2;
 }
 
 message CancelBookingResponse {
   bool success = 1;
 }
 
-// ─────────────────────────────────────────
-// 5. ConfirmPayment
-// ─────────────────────────────────────────
-
 message ConfirmPaymentRequest {
   string booking_id = 1;
-  double amount     = 2;
+  double amount      = 2;
+  string user_email  = 3;
 }
 
 message ConfirmPaymentResponse {
   Payment payment = 1;
 }
 
-// ─────────────────────────────────────────
-// 6. GetPayment
-// ─────────────────────────────────────────
-
 message GetPaymentRequest {
-  string payment_id = 1;
+  string payment_id  = 1;
+  string booking_id  = 2;
 }
 
 message GetPaymentResponse {
   Payment payment = 1;
 }
-
-// ─────────────────────────────────────────
-// 7. ListPayments  (admin, пагинация)
-// ─────────────────────────────────────────
 
 message ListPaymentsRequest {
   int32 limit  = 1;
@@ -114,10 +86,6 @@ message ListPaymentsResponse {
   int32            total    = 2;
 }
 
-// ─────────────────────────────────────────
-// 8. RefundPayment
-// ─────────────────────────────────────────
-
 message RefundPaymentRequest {
   string payment_id = 1;
 }
@@ -125,10 +93,6 @@ message RefundPaymentRequest {
 message RefundPaymentResponse {
   bool success = 1;
 }
-
-// ─────────────────────────────────────────
-// 9. CheckSeatAvailability
-// ─────────────────────────────────────────
 
 message CheckSeatRequest {
   string seat_id = 1;
@@ -138,10 +102,6 @@ message CheckSeatResponse {
   bool is_available = 1;
 }
 
-// ─────────────────────────────────────────
-// 10. GetBookingHistory
-// ─────────────────────────────────────────
-
 message GetHistoryRequest {
   string user_id = 1;
 }
@@ -149,10 +109,6 @@ message GetHistoryRequest {
 message GetHistoryResponse {
   repeated Booking bookings = 1;
 }
-
-// ─────────────────────────────────────────
-// 11. AdminListBookings  (пагинация)
-// ─────────────────────────────────────────
 
 message AdminListRequest {
   int32 limit  = 1;
@@ -164,10 +120,6 @@ message AdminListResponse {
   int32            total    = 2;
 }
 
-// ─────────────────────────────────────────
-// 12. GetBookingStats
-// ─────────────────────────────────────────
-
 message GetStatsRequest {}
 
 message GetStatsResponse {
@@ -175,10 +127,6 @@ message GetStatsResponse {
   int64 confirmed = 2;
   int64 cancelled = 3;
 }
-
-// ─────────────────────────────────────────
-// Сервис
-// ─────────────────────────────────────────
 
 service BookingService {
   rpc CreateBooking        (CreateBookingRequest)  returns (CreateBookingResponse);

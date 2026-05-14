@@ -15,12 +15,10 @@ import (
 )
 
 func main() {
-	// 1. config.New()
 	cfg := config.New()
 
 	ctx := context.Background()
 
-	// 2. pgxpool.New() с max_conns=10, retry 3 раза (1с, 2с, 4с)
 	var pool *pgxpool.Pool
 	var err error
 	dbConfig, err := pgxpool.ParseConfig(cfg.DBURL)
@@ -46,7 +44,6 @@ func main() {
 	}
 	defer pool.Close()
 
-	// 3. nats.Connect() с retry 3 раза
 	var nc *nats.Conn
 	natsRetries := []time.Duration{1 * time.Second, 2 * time.Second, 4 * time.Second}
 	for i, d := range natsRetries {
@@ -62,23 +59,18 @@ func main() {
 	}
 	defer nc.Close()
 
-	// 4. repositories
 	bookingRepo := repository.NewBookingRepository(pool)
 	paymentRepo := repository.NewPaymentRepository(pool)
 
-	// Publisher
 	pub := publisher.NewNATSPublisher(nc)
 
-	// 5. usecases (передать pool для транзакций)
 	bookingUC := usecase.NewBookingUseCase(bookingRepo, pool, pub)
 	paymentUC := usecase.NewPaymentUseCase(paymentRepo, bookingRepo, pub)
 
-	// 6. grpc handler
 	handler := deliveryGrpc.NewHandler(bookingUC, paymentUC, bookingRepo, paymentRepo)
 
-	// 7. grpc server -> serve
 	grpcServer := deliveryGrpc.NewServer(handler)
-	
+
 	if err := grpcServer.Run(cfg.GRPCPort); err != nil {
 		log.Fatalf("Failed to run gRPC server: %v", err)
 	}
