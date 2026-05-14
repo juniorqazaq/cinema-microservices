@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: booking
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  nats:
+    image: nats:latest
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+
+  booking-service:
+    build:
+      context: ./booking-service
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/booking?sslmode=disable
+      NATS_URL: nats://nats:4222
+      GRPC_PORT: 50053
+    ports:
+      - "50053:50053"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nats:
+        condition: service_started
+
+  notification-service:
+    build:
+      context: ./notification-service
+    environment:
+      NATS_URL: nats://nats:4222
+      SMTP_USER: "medinanurbek@gmail.com" # ЗАМЕНИТЕ НА ВАШ
+      SMTP_PASS: "your-app-password" # ЗАМЕНИТЕ НА ВАШ
+    depends_on:
+      nats:
+        condition: service_started
