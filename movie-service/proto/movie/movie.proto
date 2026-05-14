@@ -1,0 +1,189 @@
+syntax = "proto3";
+
+package movie;
+
+option go_package = "github.com/cinema-booking-system/movie-service/gen/go/movie;moviepb";
+
+import "google/protobuf/timestamp.proto";
+
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  ROLE_GUEST       = 1;
+  ROLE_USER        = 2;
+  ROLE_MODERATOR   = 3;
+  ROLE_ADMIN       = 4;
+}
+
+message Movie {
+  string                    id          = 1;
+  string                    title       = 2;
+  string                    description = 3;
+  string                    genre       = 4;
+  int32                     duration    = 5;
+  double                    rating      = 6;
+  google.protobuf.Timestamp created_at  = 7;
+}
+
+message Hall {
+  string id       = 1;
+  string name     = 2;
+  int32  capacity = 3;
+}
+
+message Seat {
+  string id            = 1;
+  string hall_id       = 2;
+  string row           = 3;
+  int32  number        = 4;
+  bool   is_available  = 5;
+}
+
+message Session {
+  string                    id         = 1;
+  string                    movie_id   = 2;
+  string                    hall_id    = 3;
+  google.protobuf.Timestamp start_time = 4;
+  double                    price      = 5;
+}
+
+message CreateMovieRequest {
+  string title       = 1;
+  string description = 2;
+  string genre       = 3;
+  int32  duration    = 4;
+  double rating      = 5;
+  Role   requester_role = 6;
+}
+
+message CreateMovieResponse {
+  Movie movie = 1;
+}
+
+message GetMovieRequest {
+  string id = 1;
+}
+
+message GetMovieResponse {
+  Movie movie = 1;
+}
+
+message UpdateMovieRequest {
+  string id          = 1;
+  string title       = 2;
+  string description = 3;
+  string genre       = 4;
+  int32  duration    = 5;
+  double rating      = 6;
+  Role   requester_role = 7;
+}
+
+message UpdateMovieResponse {
+  Movie movie = 1;
+}
+
+message DeleteMovieRequest {
+  string id               = 1;
+  Role   requester_role = 2;
+}
+
+message DeleteMovieResponse {
+  bool success = 1;
+}
+
+message ListMoviesRequest {
+  int32  limit            = 1;
+  int32  offset           = 2;
+  string genre            = 3;
+  google.protobuf.Timestamp created_after  = 4;
+  google.protobuf.Timestamp created_before = 5;
+}
+
+message ListMoviesResponse {
+  repeated Movie movies = 1;
+  int64          total  = 2;
+}
+
+message SearchMoviesRequest {
+  string title = 1;
+  string genre = 2;
+  int32  limit  = 3;
+  int32  offset = 4;
+}
+
+message SearchMoviesResponse {
+  repeated Movie movies = 1;
+  int64          total  = 2;
+}
+
+message CreateHallRequest {
+  string name     = 1;
+  int32  capacity = 2;
+  Role   requester_role = 3;
+}
+
+message CreateHallResponse {
+  Hall hall = 1;
+}
+
+message GetHallRequest {
+  string hall_id = 1;
+}
+
+message GetHallResponse {
+  Hall           hall  = 1;
+  repeated Seat seats = 2;
+}
+
+message CreateSessionRequest {
+  string                    movie_id   = 1;
+  string                    hall_id    = 2;
+  google.protobuf.Timestamp start_time = 3;
+  double                    price      = 4;
+}
+
+message CreateSessionResponse {
+  Session session = 1;
+}
+
+message GetSessionRequest {
+  string id = 1;
+}
+
+message GetSessionResponse {
+  Session session = 1;
+}
+
+message ListSessionsRequest {
+  string                    movie_id = 1;
+  google.protobuf.Timestamp date     = 2;
+  int32                     limit    = 3;
+  int32                     offset   = 4;
+}
+
+message ListSessionsResponse {
+  repeated Session sessions = 1;
+  int64            total    = 2;
+}
+
+message GetAvailableSeatsRequest {
+  string session_id = 1;
+}
+
+message GetAvailableSeatsResponse {
+  repeated Seat seats = 1;
+}
+
+service MovieService {
+  rpc CreateMovie         (CreateMovieRequest)         returns (CreateMovieResponse);
+  rpc GetMovie            (GetMovieRequest)            returns (GetMovieResponse);
+  rpc UpdateMovie         (UpdateMovieRequest)         returns (UpdateMovieResponse);
+  rpc DeleteMovie         (DeleteMovieRequest)         returns (DeleteMovieResponse);
+  rpc ListMovies          (ListMoviesRequest)          returns (ListMoviesResponse);
+  rpc SearchMovies        (SearchMoviesRequest)        returns (SearchMoviesResponse);
+  rpc CreateHall          (CreateHallRequest)          returns (CreateHallResponse);
+  rpc GetHall             (GetHallRequest)             returns (GetHallResponse);
+  rpc CreateSession       (CreateSessionRequest)       returns (CreateSessionResponse);
+  rpc GetSession          (GetSessionRequest)          returns (GetSessionResponse);
+  rpc ListSessions        (ListSessionsRequest)        returns (ListSessionsResponse);
+  rpc GetAvailableSeats   (GetAvailableSeatsRequest)   returns (GetAvailableSeatsResponse);
+}

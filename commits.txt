@@ -1,0 +1,7 @@
+feat(movie-service): add domain models and protobuf contracts
+feat(movie-service): implement PostgreSQL and Redis repositories
+feat(movie-service): add movie and session business logic
+feat(movie-service): add gRPC transport layer
+chore(movie-service): add Docker, migrations and CI config
+test(movie-service): add unit and integration tests
+feat(movie-service): complete movie service implementation
