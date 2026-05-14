@@ -1,0 +1,6 @@
+bin/
+.bin/
+.git/
+.idea/
+coverage.out
+*.exe
