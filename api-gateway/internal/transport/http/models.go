@@ -9,6 +9,7 @@ import (
 	"github.com/cinema-booking-system/api-gateway/internal/domain"
 	moviepb "github.com/cinema-booking-system/movie-service/gen/go/movie"
 	userpb "github.com/cinema-booking-system/user-service/gen/go/user"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -84,29 +85,23 @@ type statsJSON struct {
 }
 
 func grpcError(err error) (int, string) {
-	st, ok := status.FromError(err)
-	if !ok {
+	if err == nil {
 		return http.StatusInternalServerError, "upstream service error"
 	}
+
+	st := status.Convert(err)
+	statusCode := runtime.HTTPStatusFromCode(st.Code())
+	if st.Code() == codes.FailedPrecondition {
+		statusCode = http.StatusConflict
+	}
+
 	switch st.Code() {
-	case codes.InvalidArgument:
-		return http.StatusBadRequest, st.Message()
-	case codes.Unauthenticated:
-		return http.StatusUnauthorized, st.Message()
-	case codes.PermissionDenied:
-		return http.StatusForbidden, st.Message()
-	case codes.NotFound:
-		return http.StatusNotFound, st.Message()
-	case codes.AlreadyExists, codes.FailedPrecondition:
-		return http.StatusConflict, st.Message()
-	case codes.ResourceExhausted:
-		return http.StatusTooManyRequests, st.Message()
-	case codes.DeadlineExceeded:
-		return http.StatusGatewayTimeout, st.Message()
-	case codes.Unavailable:
-		return http.StatusServiceUnavailable, st.Message()
+	case codes.InvalidArgument, codes.Unauthenticated, codes.PermissionDenied,
+		codes.NotFound, codes.AlreadyExists, codes.FailedPrecondition,
+		codes.ResourceExhausted, codes.DeadlineExceeded, codes.Unavailable:
+		return statusCode, st.Message()
 	default:
-		return http.StatusInternalServerError, "upstream service error"
+		return statusCode, "upstream service error"
 	}
 }
 
