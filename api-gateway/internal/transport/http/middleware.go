@@ -1,90 +1,73 @@
-package gateway
+package httpgateway
 
 import (
 	"context"
 	"net/http"
 	"strings"
 	"sync"
-	"time"
 
+	"github.com/cinema-booking-system/api-gateway/internal/config"
+	"github.com/cinema-booking-system/api-gateway/internal/domain"
+	"github.com/cinema-booking-system/api-gateway/internal/repository"
 	userpb "github.com/cinema-booking-system/user-service/gen/go/user"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/time/rate"
 )
 
 const authUserKey = "auth_user"
 
-type authUser struct {
-	ID    string
-	Email string
-	Role  userpb.Role
-}
-
-type tokenBucket struct {
-	tokens float64
-	last   time.Time
-}
-
 type RateLimiter struct {
-	mu      sync.Mutex
-	rate    float64
-	burst   float64
-	buckets map[string]*tokenBucket
+	mu       sync.Mutex
+	limit    rate.Limit
+	burst    int
+	limiters map[string]*rate.Limiter
 }
 
-func NewRateLimiter(rate float64, burst int) *RateLimiter {
-	if rate <= 0 {
-		rate = 1
+func NewRateLimiter(eventsPerSecond float64, burst int) *RateLimiter {
+	if eventsPerSecond <= 0 {
+		eventsPerSecond = 1
 	}
 	if burst <= 0 {
 		burst = 1
 	}
 	return &RateLimiter{
-		rate:    rate,
-		burst:   float64(burst),
-		buckets: make(map[string]*tokenBucket),
+		limit:    rate.Limit(eventsPerSecond),
+		burst:    burst,
+		limiters: make(map[string]*rate.Limiter),
 	}
 }
 
 func (l *RateLimiter) Allow(key string) bool {
+	return l.limiterFor(key).Allow()
+}
+
+func (l *RateLimiter) limiterFor(key string) *rate.Limiter {
 	if key == "" {
 		key = "unknown"
 	}
-	now := time.Now()
+
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	b, ok := l.buckets[key]
-	if !ok {
-		l.buckets[key] = &tokenBucket{tokens: l.burst - 1, last: now}
-		return true
+	limiter, ok := l.limiters[key]
+	if ok {
+		return limiter
 	}
 
-	elapsed := now.Sub(b.last).Seconds()
-	b.tokens = minFloat(l.burst, b.tokens+elapsed*l.rate)
-	b.last = now
-	if b.tokens < 1 {
-		return false
-	}
-	b.tokens--
-	return true
-}
-
-func minFloat(a, b float64) float64 {
-	if a < b {
-		return a
-	}
-	return b
+	limiter = rate.NewLimiter(l.limit, l.burst)
+	l.limiters[key] = limiter
+	return limiter
 }
 
 func corsMiddleware(allowedOrigins []string) gin.HandlerFunc {
-	allowed := make(map[string]struct{}, len(allowedOrigins))
+	allowed := make(map[string]bool, len(allowedOrigins))
 	allowAny := false
 	for _, origin := range allowedOrigins {
 		if origin == "*" {
 			allowAny = true
 			continue
 		}
-		allowed[origin] = struct{}{}
+		allowed[origin] = true
 	}
 
 	return func(c *gin.Context) {
@@ -93,7 +76,7 @@ func corsMiddleware(allowedOrigins []string) gin.HandlerFunc {
 			if allowAny {
 				c.Header("Access-Control-Allow-Origin", origin)
 				c.Header("Vary", "Origin")
-			} else if _, ok := allowed[origin]; ok {
+			} else if allowed[origin] {
 				c.Header("Access-Control-Allow-Origin", origin)
 				c.Header("Vary", "Origin")
 			}
@@ -113,7 +96,7 @@ func corsMiddleware(allowedOrigins []string) gin.HandlerFunc {
 func rateLimitMiddleware(limiter *RateLimiter, keyFunc func(*gin.Context) string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !limiter.Allow(keyFunc(c)) {
-			fail(c, http.StatusTooManyRequests, "rate limit exceeded")
+			c.JSON(http.StatusTooManyRequests, gin.H{"error": "rate limit exceeded"})
 			c.Abort()
 			return
 		}
@@ -121,11 +104,11 @@ func rateLimitMiddleware(limiter *RateLimiter, keyFunc func(*gin.Context) string
 	}
 }
 
-func authMiddleware(cfg Config, users UserClient) gin.HandlerFunc {
+func authMiddleware(cfg config.Config, users repository.UserClient) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := bearerToken(c.GetHeader("Authorization"))
 		if token == "" {
-			fail(c, http.StatusUnauthorized, "missing bearer token")
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "missing bearer token"})
 			c.Abort()
 			return
 		}
@@ -134,20 +117,21 @@ func authMiddleware(cfg Config, users UserClient) gin.HandlerFunc {
 		defer cancel()
 		resp, err := users.ValidateToken(ctx, &userpb.ValidateTokenRequest{AccessToken: token})
 		if err != nil {
-			failGRPC(c, err)
+			statusCode, message := grpcError(err)
+			c.JSON(statusCode, gin.H{"error": message})
 			c.Abort()
 			return
 		}
 		if !resp.GetValid() {
-			fail(c, http.StatusUnauthorized, "invalid token")
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 			c.Abort()
 			return
 		}
 
-		c.Set(authUserKey, authUser{
+		c.Set(authUserKey, domain.AuthUser{
 			ID:    resp.GetUserId(),
 			Email: resp.GetEmail(),
-			Role:  resp.GetRole(),
+			Role:  roleFromProto(resp.GetRole()),
 		})
 		c.Next()
 	}
@@ -156,8 +140,8 @@ func authMiddleware(cfg Config, users UserClient) gin.HandlerFunc {
 func adminMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user, ok := currentUser(c)
-		if !ok || user.Role != userpb.Role_ROLE_ADMIN {
-			fail(c, http.StatusForbidden, "admin access required")
+		if !ok || !user.IsAdmin() {
+			c.JSON(http.StatusForbidden, gin.H{"error": "admin access required"})
 			c.Abort()
 			return
 		}
@@ -165,13 +149,20 @@ func adminMiddleware() gin.HandlerFunc {
 	}
 }
 
-func currentUser(c *gin.Context) (authUser, bool) {
+func currentUser(c *gin.Context) (domain.AuthUser, bool) {
 	raw, ok := c.Get(authUserKey)
 	if !ok {
-		return authUser{}, false
+		return domain.AuthUser{}, false
 	}
-	user, ok := raw.(authUser)
+	user, ok := raw.(domain.AuthUser)
 	return user, ok
+}
+
+func roleFromProto(role userpb.Role) domain.Role {
+	if role == userpb.Role_ROLE_ADMIN {
+		return domain.RoleAdmin
+	}
+	return domain.RoleUser
 }
 
 func bearerToken(header string) string {

@@ -1,4 +1,4 @@
-package gateway
+package repository
 
 import (
 	"context"
@@ -8,6 +8,12 @@ import (
 	userpb "github.com/cinema-booking-system/user-service/gen/go/user"
 	"google.golang.org/grpc"
 )
+
+type Clients struct {
+	User    UserClient
+	Movie   MovieClient
+	Booking BookingClient
+}
 
 type UserClient interface {
 	Register(context.Context, *userpb.RegisterRequest, ...grpc.CallOption) (*userpb.RegisterResponse, error)

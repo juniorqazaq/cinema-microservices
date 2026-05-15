@@ -1,4 +1,4 @@
-package gateway
+package httpgateway
 
 import (
 	"context"
@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/cinema-booking-system/api-gateway/internal/config"
+	"github.com/cinema-booking-system/api-gateway/internal/repository"
 	moviepb "github.com/cinema-booking-system/movie-service/gen/go/movie"
 	userpb "github.com/cinema-booking-system/user-service/gen/go/user"
 	"github.com/gin-gonic/gin"
@@ -13,11 +15,11 @@ import (
 )
 
 type Server struct {
-	cfg     Config
-	clients Clients
+	cfg     config.Config
+	clients repository.Clients
 }
 
-func NewRouter(cfg Config, clients Clients) *gin.Engine {
+func NewRouter(cfg config.Config, clients repository.Clients) *gin.Engine {
 	s := &Server{cfg: cfg, clients: clients}
 	r := gin.New()
 	_ = r.SetTrustedProxies(nil)
@@ -27,7 +29,9 @@ func NewRouter(cfg Config, clients Clients) *gin.Engine {
 		return c.ClientIP()
 	}))
 
-	r.GET("/healthz", func(c *gin.Context) { ok(c, gin.H{"status": "ok"}) })
+	r.GET("/healthz", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
 
 	r.POST("/auth/register", s.register)
 	r.POST("/auth/login", s.login)
@@ -78,14 +82,9 @@ func (s *Server) requestContext(c *gin.Context) (context.Context, context.Cancel
 }
 
 func (s *Server) register(c *gin.Context) {
-	var req struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-		FullName string `json:"full_name"`
-		Phone    string `json:"phone"`
-	}
+	var req registerRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		fail(c, http.StatusBadRequest, "invalid request body")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
@@ -98,36 +97,32 @@ func (s *Server) register(c *gin.Context) {
 		Phone:           req.Phone,
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	created(c, authTokens{AccessToken: resp.GetAccessToken(), RefreshToken: resp.GetRefreshToken()})
+	c.JSON(http.StatusCreated, gin.H{"data": authTokens{AccessToken: resp.GetAccessToken(), RefreshToken: resp.GetRefreshToken()}})
 }
 
 func (s *Server) login(c *gin.Context) {
-	var req struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+	var req loginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		fail(c, http.StatusBadRequest, "invalid request body")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
 	defer cancel()
 	resp, err := s.clients.User.Login(ctx, &userpb.LoginRequest{Email: req.Email, Password: req.Password})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, authTokens{AccessToken: resp.GetAccessToken(), RefreshToken: resp.GetRefreshToken()})
+	c.JSON(http.StatusOK, gin.H{"data": authTokens{AccessToken: resp.GetAccessToken(), RefreshToken: resp.GetRefreshToken()}})
 }
 
 func (s *Server) logout(c *gin.Context) {
-	var req struct {
-		AccessToken  string `json:"access_token"`
-		RefreshToken string `json:"refresh_token"`
-	}
+	var req logoutRequest
 	_ = c.ShouldBindJSON(&req)
 	if req.AccessToken == "" {
 		req.AccessToken = bearerToken(c.GetHeader("Authorization"))
@@ -138,42 +133,39 @@ func (s *Server) logout(c *gin.Context) {
 		AccessToken:  req.AccessToken,
 		RefreshToken: req.RefreshToken,
 	}); err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, gin.H{})
+	c.JSON(http.StatusOK, gin.H{"data": gin.H{}})
 }
 
 func (s *Server) refreshToken(c *gin.Context) {
-	var req struct {
-		RefreshToken string `json:"refresh_token"`
-	}
+	var req refreshTokenRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		fail(c, http.StatusBadRequest, "invalid request body")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
 	defer cancel()
 	resp, err := s.clients.User.RefreshToken(ctx, &userpb.RefreshTokenRequest{RefreshToken: req.RefreshToken})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, authTokens{AccessToken: resp.GetAccessToken(), RefreshToken: resp.GetRefreshToken()})
+	c.JSON(http.StatusOK, gin.H{"data": authTokens{AccessToken: resp.GetAccessToken(), RefreshToken: resp.GetRefreshToken()}})
 }
 
 func (s *Server) changePassword(c *gin.Context) {
 	user, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return
 	}
-	var req struct {
-		OldPassword string `json:"old_password"`
-		NewPassword string `json:"new_password"`
-	}
+	var req changePasswordRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		fail(c, http.StatusBadRequest, "invalid request body")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
@@ -185,10 +177,11 @@ func (s *Server) changePassword(c *gin.Context) {
 		ConfirmPassword: req.NewPassword,
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, gin.H{})
+	c.JSON(http.StatusOK, gin.H{"data": gin.H{}})
 }
 
 func (s *Server) listMovies(c *gin.Context) {
@@ -201,14 +194,15 @@ func (s *Server) listMovies(c *gin.Context) {
 		Genre:  c.Query("genre"),
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
 	out := make([]movieJSON, 0, len(resp.GetMovies()))
 	for _, m := range resp.GetMovies() {
 		out = append(out, movieFromProto(m))
 	}
-	ok(c, out)
+	c.JSON(http.StatusOK, gin.H{"data": out})
 }
 
 func (s *Server) getMovie(c *gin.Context) {
@@ -216,10 +210,11 @@ func (s *Server) getMovie(c *gin.Context) {
 	defer cancel()
 	resp, err := s.clients.Movie.GetMovie(ctx, &moviepb.GetMovieRequest{Id: c.Param("id")})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, movieFromProto(resp.GetMovie()))
+	c.JSON(http.StatusOK, gin.H{"data": movieFromProto(resp.GetMovie())})
 }
 
 func (s *Server) listSessions(c *gin.Context) {
@@ -228,7 +223,7 @@ func (s *Server) listSessions(c *gin.Context) {
 	if raw := c.Query("date"); raw != "" {
 		day, err := time.Parse("2006-01-02", raw)
 		if err != nil {
-			fail(c, http.StatusBadRequest, "invalid date")
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid date"})
 			return
 		}
 		date = timestamppb.New(day)
@@ -242,14 +237,15 @@ func (s *Server) listSessions(c *gin.Context) {
 		Offset:  offset,
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
 	out := make([]sessionJSON, 0, len(resp.GetSessions()))
 	for _, session := range resp.GetSessions() {
 		out = append(out, sessionFromProto(session))
 	}
-	ok(c, out)
+	c.JSON(http.StatusOK, gin.H{"data": out})
 }
 
 func (s *Server) getSession(c *gin.Context) {
@@ -257,10 +253,11 @@ func (s *Server) getSession(c *gin.Context) {
 	defer cancel()
 	resp, err := s.clients.Movie.GetSession(ctx, &moviepb.GetSessionRequest{Id: c.Param("id")})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, sessionFromProto(resp.GetSession()))
+	c.JSON(http.StatusOK, gin.H{"data": sessionFromProto(resp.GetSession())})
 }
 
 func (s *Server) getAvailableSeats(c *gin.Context) {
@@ -268,14 +265,15 @@ func (s *Server) getAvailableSeats(c *gin.Context) {
 	defer cancel()
 	resp, err := s.clients.Movie.GetAvailableSeats(ctx, &moviepb.GetAvailableSeatsRequest{SessionId: c.Param("id")})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
 	out := make([]seatJSON, 0, len(resp.GetSeats()))
 	for _, seat := range resp.GetSeats() {
 		out = append(out, seatFromProto(seat))
 	}
-	ok(c, out)
+	c.JSON(http.StatusOK, gin.H{"data": out})
 }
 
 func (s *Server) getHall(c *gin.Context) {
@@ -283,10 +281,11 @@ func (s *Server) getHall(c *gin.Context) {
 	defer cancel()
 	resp, err := s.clients.Movie.GetHall(ctx, &moviepb.GetHallRequest{HallId: c.Param("id")})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, hallFromProto(resp.GetHall()))
+	c.JSON(http.StatusOK, gin.H{"data": hallFromProto(resp.GetHall())})
 }
 
 func limitOffset(c *gin.Context) (int32, int32) {

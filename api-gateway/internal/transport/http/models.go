@@ -1,4 +1,4 @@
-package gateway
+package httpgateway
 
 import (
 	"net/http"
@@ -6,9 +6,9 @@ import (
 
 	bookingpb "booking-service/proto/booking"
 
+	"github.com/cinema-booking-system/api-gateway/internal/domain"
 	moviepb "github.com/cinema-booking-system/movie-service/gen/go/movie"
 	userpb "github.com/cinema-booking-system/user-service/gen/go/user"
-	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -83,49 +83,30 @@ type statsJSON struct {
 	Cancelled int64 `json:"cancelled"`
 }
 
-func ok(c *gin.Context, payload any) {
-	if payload == nil {
-		payload = gin.H{}
-	}
-	c.JSON(http.StatusOK, gin.H{"data": payload})
-}
-
-func created(c *gin.Context, payload any) {
-	c.JSON(http.StatusCreated, gin.H{"data": payload})
-}
-
-func fail(c *gin.Context, statusCode int, message string) {
-	if message == "" {
-		message = http.StatusText(statusCode)
-	}
-	c.JSON(statusCode, gin.H{"error": message})
-}
-
-func failGRPC(c *gin.Context, err error) {
+func grpcError(err error) (int, string) {
 	st, ok := status.FromError(err)
 	if !ok {
-		fail(c, http.StatusInternalServerError, "upstream service error")
-		return
+		return http.StatusInternalServerError, "upstream service error"
 	}
 	switch st.Code() {
 	case codes.InvalidArgument:
-		fail(c, http.StatusBadRequest, st.Message())
+		return http.StatusBadRequest, st.Message()
 	case codes.Unauthenticated:
-		fail(c, http.StatusUnauthorized, st.Message())
+		return http.StatusUnauthorized, st.Message()
 	case codes.PermissionDenied:
-		fail(c, http.StatusForbidden, st.Message())
+		return http.StatusForbidden, st.Message()
 	case codes.NotFound:
-		fail(c, http.StatusNotFound, st.Message())
+		return http.StatusNotFound, st.Message()
 	case codes.AlreadyExists, codes.FailedPrecondition:
-		fail(c, http.StatusConflict, st.Message())
+		return http.StatusConflict, st.Message()
 	case codes.ResourceExhausted:
-		fail(c, http.StatusTooManyRequests, st.Message())
+		return http.StatusTooManyRequests, st.Message()
 	case codes.DeadlineExceeded:
-		fail(c, http.StatusGatewayTimeout, st.Message())
+		return http.StatusGatewayTimeout, st.Message()
 	case codes.Unavailable:
-		fail(c, http.StatusServiceUnavailable, st.Message())
+		return http.StatusServiceUnavailable, st.Message()
 	default:
-		fail(c, http.StatusInternalServerError, "upstream service error")
+		return http.StatusInternalServerError, "upstream service error"
 	}
 }
 
@@ -234,8 +215,8 @@ func roleForFrontend(role userpb.Role) string {
 	return "user"
 }
 
-func movieRole(role userpb.Role) moviepb.Role {
-	if role == userpb.Role_ROLE_ADMIN {
+func movieRole(role domain.Role) moviepb.Role {
+	if role == domain.RoleAdmin {
 		return moviepb.Role_ROLE_ADMIN
 	}
 	return moviepb.Role_ROLE_USER

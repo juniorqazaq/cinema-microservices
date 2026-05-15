@@ -1,4 +1,4 @@
-package gateway
+package httpgateway
 
 import (
 	"net/http"
@@ -10,15 +10,12 @@ import (
 func (s *Server) createBooking(c *gin.Context) {
 	user, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return
 	}
-	var req struct {
-		SessionID string `json:"session_id"`
-		SeatID    string `json:"seat_id"`
-	}
+	var req createBookingRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		fail(c, http.StatusBadRequest, "invalid request body")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
@@ -30,42 +27,45 @@ func (s *Server) createBooking(c *gin.Context) {
 		UserEmail: user.Email,
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	created(c, bookingFromProto(resp.GetBooking()))
+	c.JSON(http.StatusCreated, gin.H{"data": bookingFromProto(resp.GetBooking())})
 }
 
 func (s *Server) listUserBookings(c *gin.Context) {
 	user, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
 	defer cancel()
 	resp, err := s.clients.Booking.ListUserBookings(ctx, &bookingpb.ListUserBookingsRequest{UserId: user.ID})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, bookingsFromProto(resp.GetBookings()))
+	c.JSON(http.StatusOK, gin.H{"data": bookingsFromProto(resp.GetBookings())})
 }
 
 func (s *Server) getBookingHistory(c *gin.Context) {
 	user, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
 	defer cancel()
 	resp, err := s.clients.Booking.GetBookingHistory(ctx, &bookingpb.GetHistoryRequest{UserId: user.ID})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, bookingsFromProto(resp.GetBookings()))
+	c.JSON(http.StatusOK, gin.H{"data": bookingsFromProto(resp.GetBookings())})
 }
 
 func (s *Server) getBooking(c *gin.Context) {
@@ -73,13 +73,13 @@ func (s *Server) getBooking(c *gin.Context) {
 	if !owned {
 		return
 	}
-	ok(c, bookingFromProto(booking))
+	c.JSON(http.StatusOK, gin.H{"data": bookingFromProto(booking)})
 }
 
 func (s *Server) cancelBooking(c *gin.Context) {
 	user, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return
 	}
 	if _, ok := s.requireOwnedBooking(c, c.Param("id")); !ok {
@@ -92,28 +92,22 @@ func (s *Server) cancelBooking(c *gin.Context) {
 		UserEmail: user.Email,
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, gin.H{})
+	c.JSON(http.StatusOK, gin.H{"data": gin.H{}})
 }
 
 func (s *Server) confirmPayment(c *gin.Context) {
 	user, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return
 	}
-	var req struct {
-		BookingID string  `json:"booking_id"`
-		Amount    float64 `json:"amount"`
-	}
+	var req confirmPaymentRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		fail(c, http.StatusBadRequest, "invalid request body")
-		return
-	}
-	if req.Amount <= 0 {
-		fail(c, http.StatusBadRequest, "amount must be positive")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 	if _, ok := s.requireOwnedBooking(c, req.BookingID); !ok {
@@ -127,10 +121,11 @@ func (s *Server) confirmPayment(c *gin.Context) {
 		UserEmail: user.Email,
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, paymentFromProto(resp.GetPayment()))
+	c.JSON(http.StatusOK, gin.H{"data": paymentFromProto(resp.GetPayment())})
 }
 
 func (s *Server) getPayment(c *gin.Context) {
@@ -138,40 +133,42 @@ func (s *Server) getPayment(c *gin.Context) {
 	resp, err := s.clients.Booking.GetPayment(ctx, &bookingpb.GetPaymentRequest{PaymentId: c.Param("id")})
 	cancel()
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
 	payment := resp.GetPayment()
 	if payment == nil {
-		fail(c, http.StatusNotFound, "payment not found")
+		c.JSON(http.StatusNotFound, gin.H{"error": "payment not found"})
 		return
 	}
 	if _, ok := s.requireOwnedBooking(c, payment.GetBookingId()); !ok {
 		return
 	}
-	ok(c, paymentFromProto(payment))
+	c.JSON(http.StatusOK, gin.H{"data": paymentFromProto(payment)})
 }
 
 func (s *Server) requireOwnedBooking(c *gin.Context, bookingID string) (*bookingpb.Booking, bool) {
 	user, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return nil, false
 	}
 	ctx, cancel := s.requestContext(c)
 	defer cancel()
 	resp, err := s.clients.Booking.GetBooking(ctx, &bookingpb.GetBookingRequest{BookingId: bookingID})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return nil, false
 	}
 	booking := resp.GetBooking()
 	if booking == nil {
-		fail(c, http.StatusNotFound, "booking not found")
+		c.JSON(http.StatusNotFound, gin.H{"error": "booking not found"})
 		return nil, false
 	}
 	if booking.GetUserId() != user.ID {
-		fail(c, http.StatusForbidden, "booking belongs to another user")
+		c.JSON(http.StatusForbidden, gin.H{"error": "booking belongs to another user"})
 		return nil, false
 	}
 	return booking, true

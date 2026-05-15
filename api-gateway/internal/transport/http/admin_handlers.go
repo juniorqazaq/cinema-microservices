@@ -1,4 +1,4 @@
-package gateway
+package httpgateway
 
 import (
 	"encoding/json"
@@ -15,7 +15,7 @@ import (
 func (s *Server) adminListUsers(c *gin.Context) {
 	admin, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return
 	}
 	page := int32(queryInt(c, "page", 1))
@@ -41,20 +41,21 @@ func (s *Server) adminListUsers(c *gin.Context) {
 		BannedOnly: c.Query("banned_only") == "true",
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
 	out := make([]userJSON, 0, len(resp.GetUsers()))
 	for _, user := range resp.GetUsers() {
 		out = append(out, userFromProto(user))
 	}
-	ok(c, out)
+	c.JSON(http.StatusOK, gin.H{"data": out})
 }
 
 func (s *Server) adminBanUser(c *gin.Context) {
 	admin, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
@@ -66,61 +67,64 @@ func (s *Server) adminBanUser(c *gin.Context) {
 		Reason:  "banned by admin",
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, gin.H{})
+	c.JSON(http.StatusOK, gin.H{"data": gin.H{}})
 }
 
 func (s *Server) adminCreateMovie(c *gin.Context) {
 	user, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return
 	}
-	var req moviePayload
+	var req createMovieRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		fail(c, http.StatusBadRequest, "invalid request body")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
 	defer cancel()
 	resp, err := s.clients.Movie.CreateMovie(ctx, &moviepb.CreateMovieRequest{
-		Title:         req.Title.Value(),
-		Description:   req.Description.Value(),
-		Genre:         req.Genre.Value(),
-		Duration:      req.Duration.Value(),
-		Rating:        req.Rating.Value(),
+		Title:         req.Title,
+		Description:   req.Description,
+		Genre:         req.Genre,
+		Duration:      req.Duration,
+		Rating:        req.Rating,
 		RequesterRole: movieRole(user.Role),
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	created(c, movieFromProto(resp.GetMovie()))
+	c.JSON(http.StatusCreated, gin.H{"data": movieFromProto(resp.GetMovie())})
 }
 
 func (s *Server) adminUpdateMovie(c *gin.Context) {
 	user, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return
 	}
 	var req moviePayload
 	if err := c.ShouldBindJSON(&req); err != nil {
-		fail(c, http.StatusBadRequest, "invalid request body")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
 	current, err := s.clients.Movie.GetMovie(ctx, &moviepb.GetMovieRequest{Id: c.Param("id")})
 	cancel()
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
 	movie := current.GetMovie()
 	if movie == nil {
-		fail(c, http.StatusNotFound, "movie not found")
+		c.JSON(http.StatusNotFound, gin.H{"error": "movie not found"})
 		return
 	}
 	title := req.Title.Or(movie.GetTitle())
@@ -141,16 +145,17 @@ func (s *Server) adminUpdateMovie(c *gin.Context) {
 		RequesterRole: movieRole(user.Role),
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, movieFromProto(resp.GetMovie()))
+	c.JSON(http.StatusOK, gin.H{"data": movieFromProto(resp.GetMovie())})
 }
 
 func (s *Server) adminDeleteMovie(c *gin.Context) {
 	user, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
@@ -160,24 +165,22 @@ func (s *Server) adminDeleteMovie(c *gin.Context) {
 		RequesterRole: movieRole(user.Role),
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, gin.H{})
+	c.JSON(http.StatusOK, gin.H{"data": gin.H{}})
 }
 
 func (s *Server) adminCreateHall(c *gin.Context) {
 	user, okUser := currentUser(c)
 	if !okUser {
-		fail(c, http.StatusUnauthorized, "missing authenticated user")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "missing authenticated user"})
 		return
 	}
-	var req struct {
-		Name     string `json:"name"`
-		Capacity int32  `json:"capacity"`
-	}
+	var req createHallRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		fail(c, http.StatusBadRequest, "invalid request body")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
@@ -188,26 +191,22 @@ func (s *Server) adminCreateHall(c *gin.Context) {
 		RequesterRole: movieRole(user.Role),
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	created(c, hallFromProto(resp.GetHall()))
+	c.JSON(http.StatusCreated, gin.H{"data": hallFromProto(resp.GetHall())})
 }
 
 func (s *Server) adminCreateSession(c *gin.Context) {
-	var req struct {
-		MovieID   string  `json:"movie_id"`
-		HallID    string  `json:"hall_id"`
-		StartTime string  `json:"start_time"`
-		Price     float64 `json:"price"`
-	}
+	var req createSessionRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		fail(c, http.StatusBadRequest, "invalid request body")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request body"})
 		return
 	}
 	start, err := time.Parse(time.RFC3339, req.StartTime)
 	if err != nil {
-		fail(c, http.StatusBadRequest, "invalid start_time")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid start_time"})
 		return
 	}
 	ctx, cancel := s.requestContext(c)
@@ -219,10 +218,11 @@ func (s *Server) adminCreateSession(c *gin.Context) {
 		Price:     req.Price,
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	created(c, sessionFromProto(resp.GetSession()))
+	c.JSON(http.StatusCreated, gin.H{"data": sessionFromProto(resp.GetSession())})
 }
 
 func (s *Server) adminListBookings(c *gin.Context) {
@@ -234,10 +234,11 @@ func (s *Server) adminListBookings(c *gin.Context) {
 		Offset: offset,
 	})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, bookingsFromProto(resp.GetBookings()))
+	c.JSON(http.StatusOK, gin.H{"data": bookingsFromProto(resp.GetBookings())})
 }
 
 func (s *Server) adminBookingStats(c *gin.Context) {
@@ -245,14 +246,15 @@ func (s *Server) adminBookingStats(c *gin.Context) {
 	defer cancel()
 	resp, err := s.clients.Booking.GetBookingStats(ctx, &bookingpb.GetStatsRequest{})
 	if err != nil {
-		failGRPC(c, err)
+		statusCode, message := grpcError(err)
+		c.JSON(statusCode, gin.H{"error": message})
 		return
 	}
-	ok(c, statsJSON{
+	c.JSON(http.StatusOK, gin.H{"data": statsJSON{
 		Total:     resp.GetTotal(),
 		Confirmed: resp.GetConfirmed(),
 		Cancelled: resp.GetCancelled(),
-	})
+	}})
 }
 
 type moviePayload struct {

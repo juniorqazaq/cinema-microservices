@@ -1,4 +1,4 @@
-package gateway
+package httpgateway
 
 import (
 	"bytes"
@@ -9,6 +9,8 @@ import (
 	"time"
 
 	bookingpb "booking-service/proto/booking"
+	"github.com/cinema-booking-system/api-gateway/internal/config"
+	"github.com/cinema-booking-system/api-gateway/internal/repository"
 	moviepb "github.com/cinema-booking-system/movie-service/gen/go/movie"
 	userpb "github.com/cinema-booking-system/user-service/gen/go/user"
 	"github.com/gin-gonic/gin"
@@ -21,7 +23,7 @@ import (
 func TestListMoviesClampsFrontendPagination(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	movies := &fakeMovieClient{}
-	router := testRouter(Clients{User: &fakeUserClient{}, Movie: movies, Booking: &fakeBookingClient{}})
+	router := testRouter(repository.Clients{User: &fakeUserClient{}, Movie: movies, Booking: &fakeBookingClient{}})
 
 	res := perform(router, http.MethodGet, "/movies?page=2&limit=500", "", nil)
 	if res.Code != http.StatusOK {
@@ -38,7 +40,7 @@ func TestListMoviesClampsFrontendPagination(t *testing.T) {
 func TestGRPCNotFoundMapsToHTTP404(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	movies := &fakeMovieClient{getMovieErr: status.Error(codes.NotFound, "movie not found")}
-	router := testRouter(Clients{User: &fakeUserClient{}, Movie: movies, Booking: &fakeBookingClient{}})
+	router := testRouter(repository.Clients{User: &fakeUserClient{}, Movie: movies, Booking: &fakeBookingClient{}})
 
 	res := perform(router, http.MethodGet, "/movies/missing", "", nil)
 	if res.Code != http.StatusNotFound {
@@ -49,7 +51,7 @@ func TestGRPCNotFoundMapsToHTTP404(t *testing.T) {
 func TestAdminRouteRejectsNonAdmin(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	users := &fakeUserClient{role: userpb.Role_ROLE_USER}
-	router := testRouter(Clients{User: users, Movie: &fakeMovieClient{}, Booking: &fakeBookingClient{}})
+	router := testRouter(repository.Clients{User: users, Movie: &fakeMovieClient{}, Booking: &fakeBookingClient{}})
 
 	res := perform(router, http.MethodGet, "/admin/bookings/stats", "Bearer token", nil)
 	if res.Code != http.StatusForbidden {
@@ -63,7 +65,7 @@ func TestOwnedBookingRejectsDifferentUser(t *testing.T) {
 	bookings := &fakeBookingClient{
 		booking: &bookingpb.Booking{Id: "b1", UserId: "user-2"},
 	}
-	router := testRouter(Clients{User: users, Movie: &fakeMovieClient{}, Booking: bookings})
+	router := testRouter(repository.Clients{User: users, Movie: &fakeMovieClient{}, Booking: bookings})
 
 	res := perform(router, http.MethodGet, "/bookings/b1", "Bearer token", nil)
 	if res.Code != http.StatusForbidden {
@@ -75,7 +77,7 @@ func TestCreateBookingInjectsAuthenticatedUser(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	users := &fakeUserClient{userID: "user-1", email: "u@example.com"}
 	bookings := &fakeBookingClient{}
-	router := testRouter(Clients{User: users, Movie: &fakeMovieClient{}, Booking: bookings})
+	router := testRouter(repository.Clients{User: users, Movie: &fakeMovieClient{}, Booking: bookings})
 
 	body := []byte(`{"session_id":"s1","seat_id":"seat-1"}`)
 	res := perform(router, http.MethodPost, "/bookings", "Bearer token", body)
@@ -95,7 +97,7 @@ func TestRateLimiterRejectsExcessRequests(t *testing.T) {
 	cfg := testConfig()
 	cfg.IPRate = 1
 	cfg.IPBurst = 1
-	router := NewRouter(cfg, Clients{User: &fakeUserClient{}, Movie: &fakeMovieClient{}, Booking: &fakeBookingClient{}})
+	router := NewRouter(cfg, repository.Clients{User: &fakeUserClient{}, Movie: &fakeMovieClient{}, Booking: &fakeBookingClient{}})
 
 	first := perform(router, http.MethodGet, "/healthz", "", nil)
 	if first.Code != http.StatusOK {
@@ -107,12 +109,12 @@ func TestRateLimiterRejectsExcessRequests(t *testing.T) {
 	}
 }
 
-func testRouter(clients Clients) *gin.Engine {
+func testRouter(clients repository.Clients) *gin.Engine {
 	return NewRouter(testConfig(), clients)
 }
 
-func testConfig() Config {
-	return Config{
+func testConfig() config.Config {
+	return config.Config{
 		HTTPAddr:       ":0",
 		RequestTimeout: time.Second,
 		AllowedOrigins: []string{"http://localhost:5173"},

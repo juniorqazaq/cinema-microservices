@@ -8,6 +8,17 @@ Gin HTTP gateway for the React frontend. It owns REST payload shape, JWT validat
 go run ./cmd/api-gateway
 ```
 
+## Structure
+
+```text
+cmd/api-gateway/           # process bootstrap and graceful shutdown
+internal/config/           # environment-backed configuration
+internal/domain/           # gateway domain concepts
+internal/repository/       # ports for upstream service dependencies
+internal/infra/grpcclient/ # gRPC client wiring for repository ports
+internal/transport/http/   # Gin router, middleware, request DTOs, response mappers
+```
+
 Environment:
 
 | Variable | Default |
