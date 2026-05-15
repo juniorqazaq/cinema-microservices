@@ -43,9 +43,8 @@ async function refreshAccessToken(): Promise<string> {
     '/auth/refresh',
     { refresh_token: refreshToken },
   )
-  const access_token = res.data.data.access_token
-  const currentRefresh = useAuthStore.getState().refreshToken
-  useAuthStore.getState().setTokens(access_token, currentRefresh)
+  const { access_token, refresh_token } = res.data.data
+  useAuthStore.getState().setTokens(access_token, refresh_token)
   return access_token
 }
 

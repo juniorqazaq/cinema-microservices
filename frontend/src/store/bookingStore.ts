@@ -14,6 +14,7 @@ interface BookingState {
   setHall: (h: Hall) => void
   toggleSeat: (seat: Seat) => void
   setStep: (n: BookingStep) => void
+  clearSeats: () => void
   clear: () => void
 }
 
@@ -42,5 +43,6 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     set({ selectedSeats: [...selectedSeats, seat] })
   },
   setStep: (step) => set({ step }),
+  clearSeats: () => set({ selectedSeats: [] }),
   clear: () => set({ ...initial }),
 }))

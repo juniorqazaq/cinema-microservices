@@ -11,6 +11,7 @@ Monorepository for a cinema booking platform: **Go gRPC microservices** (users, 
 | **User service** | [`user-service/`](user-service/) | gRPC **50051** |
 | **Movie service** | [`movie-service/`](movie-service/) | gRPC **50052** |
 | **Booking service** | [`booking-service/`](booking-service/) | gRPC **50053** |
+| **API gateway** | [`api-gateway/`](api-gateway/) | HTTP **8080** |
 | **Notification service** | [`notification-service/`](notification-service/) | NATS subscriber + SMTP (no public HTTP) |
 | **Web frontend** | [`frontend/`](frontend/) | Vite dev **5173** |
 
@@ -75,11 +76,11 @@ Monorepository for a cinema booking platform: **Go gRPC microservices** (users, 
 
 ## HTTP API and gateway
 
-There is **no HTTP gateway in this repo**; implement it separately (BFF / reverse proxy) if needed. The SPA’s expected routes and payloads are defined by the TypeScript client:
+The HTTP gateway lives in [`api-gateway/`](api-gateway/). The SPA’s expected routes and payloads are defined by the TypeScript client:
 
 - **Source of truth:** [`frontend/src/api/`](frontend/src/api/) (especially `auth.ts`, `movies.ts`, `bookings.ts`, `admin.ts`) and [`frontend/src/api/axios.ts`](frontend/src/api/axios.ts).
 
-**Typical mapping:** gateway listens on HTTP (e.g. 8080), validates `Authorization: Bearer …` via **UserService.ValidateToken**, then forwards to:
+**Mapping:** gateway listens on HTTP 8080, validates `Authorization: Bearer …` via **UserService.ValidateToken**, then forwards to:
 
 | gRPC target | Address (local defaults) | Proto |
 | ----------- | ------------------------ | ----- |
@@ -87,7 +88,16 @@ There is **no HTTP gateway in this repo**; implement it separately (BFF / revers
 | Movie | `localhost:50052` | `movie.MovieService` |
 | Booking | `localhost:50053` | `booking.BookingService` |
 
-**Conventions used by the client:** success body often `{ "data": … }`; errors `{ "error": "…" }`; register/login use `postAuth` / token helpers without Bearer; other calls attach Bearer and rely on `/auth/refresh` on 401 (see `axios.ts`). Booking gRPC calls should pass **`user_email`** from the validated user when creating/cancelling bookings and confirming payments so notification-service can email users.
+**Conventions used by the client:** success body `{ "data": … }`; errors `{ "error": "…" }`; register/login/refresh do not require Bearer; protected calls attach Bearer and rely on `/auth/refresh` on 401 (see `axios.ts`). Booking gRPC calls pass **`user_email`** from the validated user when creating/cancelling bookings and confirming payments so notification-service can email users.
+
+**Gateway run:**
+
+```bash
+cd api-gateway
+go run ./cmd/api-gateway
+```
+
+The gateway uses in-memory rate limits by IP and authenticated user. Defaults are documented in [`api-gateway/README.md`](api-gateway/README.md).
 
 ---
 

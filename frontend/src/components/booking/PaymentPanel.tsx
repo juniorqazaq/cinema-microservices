@@ -6,6 +6,7 @@ import { formatPrice } from '../../utils/format'
 import { Button } from '../ui/Button'
 import { Spinner } from '../ui/Spinner'
 import { createBooking, confirmPayment } from '../../api/bookings'
+import { TopUpModal } from './TopUpModal'
 
 type PayTab = 'wallet' | 'card' | 'kaspi'
 
@@ -27,14 +28,22 @@ export function PaymentPanel({
   onError,
 }: PaymentPanelProps) {
   const user = useAuthStore((s) => s.user)
+  const topUpBalance = useAuthStore((s) => s.topUpBalance)
+  const adjustBalance = useAuthStore((s) => s.adjustBalance)
   const [tab, setTab] = useState<PayTab>('wallet')
   const [loading, setLoading] = useState(false)
+  const [topUpOpen, setTopUpOpen] = useState(false)
 
   const total = selectedSeats.length * session.price
   const balance = user?.balance ?? 0
   const sufficient = balance >= total
 
   async function handleConfirm() {
+    if (tab === 'wallet' && !sufficient) {
+      onError('Insufficient balance. Top up your wallet to continue.')
+      return
+    }
+
     setLoading(true)
     try {
       let lastBookingId = ''
@@ -42,6 +51,9 @@ export function PaymentPanel({
         const booking = await createBooking(session.id, seat.id)
         lastBookingId = booking.id
         await confirmPayment(booking.id, session.price)
+      }
+      if (tab === 'wallet') {
+        adjustBalance(-total)
       }
       onPaid({ bookingId: lastBookingId })
     } catch (e) {
@@ -68,7 +80,13 @@ export function PaymentPanel({
     { id: 'kaspi', label: 'Kaspi QR' },
   ]
 
+  const payDisabled =
+    loading ||
+    selectedSeats.length === 0 ||
+    (tab === 'wallet' && !sufficient)
+
   return (
+    <>
     <div className="flex max-w-xl flex-col gap-4">
       <div className="rounded-lg border border-border bg-card p-4">
         <p className="text-card-title font-medium text-white">{movie.title}</p>
@@ -106,7 +124,12 @@ export function PaymentPanel({
           ) : (
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <p className="text-danger">Insufficient balance</p>
-              <Button type="button" variant="secondary" className="px-2 py-1 text-[11px]">
+              <Button
+                type="button"
+                variant="secondary"
+                className="px-2 py-1 text-[11px]"
+                onClick={() => setTopUpOpen(true)}
+              >
                 Top up
               </Button>
             </div>
@@ -119,7 +142,7 @@ export function PaymentPanel({
       )}
       <Button
         type="button"
-        disabled={loading || selectedSeats.length === 0}
+        disabled={payDisabled}
         className="w-full max-w-xs gap-2 self-start"
         onClick={() => void handleConfirm()}
       >
@@ -127,5 +150,12 @@ export function PaymentPanel({
         Confirm & pay
       </Button>
     </div>
+    <TopUpModal
+      open={topUpOpen}
+      currentBalance={balance}
+      onClose={() => setTopUpOpen(false)}
+      onConfirm={(amount) => topUpBalance(amount)}
+    />
+    </>
   )
 }

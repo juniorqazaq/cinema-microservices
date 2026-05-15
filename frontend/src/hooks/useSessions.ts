@@ -16,7 +16,7 @@ export function useSessions(
     enabled:
       (options?.enabled ?? true) &&
       Boolean(params?.movie_id) &&
-      Boolean(params?.date),
+      (params?.date !== undefined ? Boolean(params.date) : true),
   })
 }
 
