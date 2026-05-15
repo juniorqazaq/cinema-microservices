@@ -5,6 +5,7 @@ import (
 	"time"
 
 	bookingpb "booking-service/proto/booking"
+
 	moviepb "github.com/cinema-booking-system/movie-service/gen/go/movie"
 	userpb "github.com/cinema-booking-system/user-service/gen/go/user"
 	"github.com/gin-gonic/gin"

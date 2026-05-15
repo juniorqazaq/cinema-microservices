@@ -1,10 +1,8 @@
 package gateway
 
 import (
-	"context"
-	"time"
-
 	bookingpb "booking-service/proto/booking"
+
 	moviepb "github.com/cinema-booking-system/movie-service/gen/go/movie"
 	userpb "github.com/cinema-booking-system/user-service/gen/go/user"
 	"google.golang.org/grpc"
@@ -18,19 +16,16 @@ type Clients struct {
 }
 
 func DialClients(cfg Config) (Clients, func(), error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	userConn, err := grpc.DialContext(ctx, cfg.UserGRPCAddr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	userConn, err := grpc.NewClient(cfg.UserGRPCAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return Clients{}, func() {}, err
 	}
-	movieConn, err := grpc.DialContext(ctx, cfg.MovieGRPCAddr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	movieConn, err := grpc.NewClient(cfg.MovieGRPCAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		_ = userConn.Close()
 		return Clients{}, func() {}, err
 	}
-	bookingConn, err := grpc.DialContext(ctx, cfg.BookingGRPCAddr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
+	bookingConn, err := grpc.NewClient(cfg.BookingGRPCAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		_ = userConn.Close()
 		_ = movieConn.Close()
