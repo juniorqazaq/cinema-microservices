@@ -36,6 +36,22 @@ services:
       nats:
         condition: service_started
 
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    environment:
+      HTTP_ADDR: ":8080"
+      USER_GRPC_ADDR: "${USER_GRPC_ADDR:-host.docker.internal:50051}"
+      MOVIE_GRPC_ADDR: "${MOVIE_GRPC_ADDR:-host.docker.internal:50052}"
+      BOOKING_GRPC_ADDR: "${BOOKING_GRPC_ADDR:-booking-service:50053}"
+      CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS:-http://localhost:5173}"
+    ports:
+      - "8080:8080"
+    depends_on:
+      booking-service:
+        condition: service_started
+
   notification-service:
     build:
       context: ./notification-service
