@@ -17,9 +17,11 @@ var (
 	ErrTokenBlacklisted   = errors.New("token has been revoked")
 	ErrWeakPassword       = errors.New("password must be at least 8 characters")
 	ErrInvalidEmail       = errors.New("invalid email format")
+	ErrInvalidArgument    = errors.New("invalid argument")
 	ErrPasswordMismatch   = errors.New("passwords do not match")
 	ErrInvalidUserID      = errors.New("invalid user id")
-	ErrSelfBanForbidden   = errors.New("admin cannot ban own account")
+	ErrSelfBanForbidden      = errors.New("admin cannot ban own account")
+	ErrInsufficientBalance   = errors.New("insufficient balance")
 )
 
 type Role string
@@ -40,6 +42,7 @@ type User struct {
 	Role         Role
 	IsBanned     bool
 	BanReason    string
+	Balance      float64
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }
@@ -53,6 +56,9 @@ type UserRepository interface {
 	Delete(ctx context.Context, id string) error
 	GetAll(ctx context.Context, page, pageSize int, roleFilter string, bannedOnly bool) ([]*User, int64, error)
 	Ban(ctx context.Context, userID string, ban bool, reason string) (*User, error)
+	TopUpBalance(ctx context.Context, userID string, amount float64) (*User, error)
+	DeductBalance(ctx context.Context, userID string, amount float64) (*User, error)
+	UpdateRole(ctx context.Context, userID string, role Role) (*User, error)
 }
 
 type TokenRepository interface {
@@ -142,4 +148,7 @@ type UserUseCase interface {
 	GetAllUsers(ctx context.Context, input GetAllUsersInput) (*GetAllUsersOutput, error)
 	BanUser(ctx context.Context, adminID, userID string, ban bool, reason string) (*User, error)
 	GetUserByEmail(ctx context.Context, input GetUserByEmailInput) (*User, error)
+	TopUpBalance(ctx context.Context, userID string, amount float64) (*User, error)
+	DeductBalance(ctx context.Context, userID string, amount float64) (*User, error)
+	UpdateUserRole(ctx context.Context, adminID, userID string, role Role) (*User, error)
 }

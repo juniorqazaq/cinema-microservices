@@ -18,6 +18,10 @@ type UserClient interface {
 	ChangePassword(context.Context, *userpb.ChangePasswordRequest, ...grpc.CallOption) (*userpb.ChangePasswordResponse, error)
 	GetAllUsers(context.Context, *userpb.GetAllUsersRequest, ...grpc.CallOption) (*userpb.GetAllUsersResponse, error)
 	BanUser(context.Context, *userpb.BanUserRequest, ...grpc.CallOption) (*userpb.BanUserResponse, error)
+	GetProfile(context.Context, *userpb.GetProfileRequest, ...grpc.CallOption) (*userpb.GetProfileResponse, error)
+	TopUpBalance(context.Context, *userpb.TopUpBalanceRequest, ...grpc.CallOption) (*userpb.TopUpBalanceResponse, error)
+	DeductBalance(context.Context, *userpb.DeductBalanceRequest, ...grpc.CallOption) (*userpb.DeductBalanceResponse, error)
+	UpdateUserRole(context.Context, *userpb.UpdateUserRoleRequest, ...grpc.CallOption) (*userpb.UpdateUserRoleResponse, error)
 }
 
 type MovieClient interface {
@@ -44,4 +48,5 @@ type BookingClient interface {
 	GetBookingHistory(context.Context, *bookingpb.GetHistoryRequest, ...grpc.CallOption) (*bookingpb.GetHistoryResponse, error)
 	AdminListBookings(context.Context, *bookingpb.AdminListRequest, ...grpc.CallOption) (*bookingpb.AdminListResponse, error)
 	GetBookingStats(context.Context, *bookingpb.GetStatsRequest, ...grpc.CallOption) (*bookingpb.GetStatsResponse, error)
+	GetSessionTakenSeats(context.Context, *bookingpb.GetSessionTakenSeatsRequest, ...grpc.CallOption) (*bookingpb.GetSessionTakenSeatsResponse, error)
 }

@@ -25,20 +25,26 @@ type movieScanner interface {
 
 func scanMovie(row movieScanner) (*domain.Movie, error) {
 	var m domain.Movie
-	if err := row.Scan(&m.ID, &m.Title, &m.Description, &m.Genre, &m.Duration, &m.Rating, &m.CreatedAt); err != nil {
+	age := 12
+	if err := row.Scan(&m.ID, &m.Title, &m.Description, &m.Genre, &m.Duration, &m.Rating, &age, &m.CreatedAt); err != nil {
 		return nil, err
 	}
+	m.AgeRating = age
 	return &m, nil
 }
 
 const createMovieSQL = `
-INSERT INTO movies (title, description, genre, duration, rating, created_at)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, title, description, genre, duration, rating, created_at`
+INSERT INTO movies (title, description, genre, duration, rating, age_rating, created_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, title, description, genre, duration, rating, age_rating, created_at`
 
 func (r *MovieRepository) Create(ctx context.Context, m *domain.Movie) (*domain.Movie, error) {
 	now := time.Now().UTC()
-	row := r.db.QueryRow(ctx, createMovieSQL, m.Title, m.Description, m.Genre, m.Duration, m.Rating, now)
+	age := m.AgeRating
+	if age == 0 {
+		age = 12
+	}
+	row := r.db.QueryRow(ctx, createMovieSQL, m.Title, m.Description, m.Genre, m.Duration, m.Rating, age, now)
 	out, err := scanMovie(row)
 	if err != nil {
 		return nil, fmt.Errorf("postgres: create movie: %w", err)
@@ -47,7 +53,7 @@ func (r *MovieRepository) Create(ctx context.Context, m *domain.Movie) (*domain.
 }
 
 const getMovieByIDSQL = `
-SELECT id, title, description, genre, duration, rating, created_at FROM movies WHERE id = $1`
+SELECT id, title, description, genre, duration, rating, age_rating, created_at FROM movies WHERE id = $1`
 
 func (r *MovieRepository) GetByID(ctx context.Context, id string) (*domain.Movie, error) {
 	row := r.db.QueryRow(ctx, getMovieByIDSQL, id)
@@ -62,12 +68,16 @@ func (r *MovieRepository) GetByID(ctx context.Context, id string) (*domain.Movie
 }
 
 const updateMovieSQL = `
-UPDATE movies SET title = $2, description = $3, genre = $4, duration = $5, rating = $6
+UPDATE movies SET title = $2, description = $3, genre = $4, duration = $5, rating = $6, age_rating = $7
 WHERE id = $1
-RETURNING id, title, description, genre, duration, rating, created_at`
+RETURNING id, title, description, genre, duration, rating, age_rating, created_at`
 
 func (r *MovieRepository) Update(ctx context.Context, m *domain.Movie) (*domain.Movie, error) {
-	row := r.db.QueryRow(ctx, updateMovieSQL, m.ID, m.Title, m.Description, m.Genre, m.Duration, m.Rating)
+	age := m.AgeRating
+	if age == 0 {
+		age = 12
+	}
+	row := r.db.QueryRow(ctx, updateMovieSQL, m.ID, m.Title, m.Description, m.Genre, m.Duration, m.Rating, age)
 	out, err := scanMovie(row)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -116,7 +126,7 @@ func (r *MovieRepository) List(ctx context.Context, limit, offset int, genre str
 		return nil, 0, fmt.Errorf("postgres: count movies: %w", err)
 	}
 	listSQL := fmt.Sprintf(`
-SELECT id, title, description, genre, duration, rating, created_at
+SELECT id, title, description, genre, duration, rating, age_rating, created_at
 FROM movies %s
 ORDER BY created_at DESC
 LIMIT $%d OFFSET $%d`, where, argPos, argPos+1)
@@ -157,7 +167,7 @@ func (r *MovieRepository) Search(ctx context.Context, title, genre string, limit
 		return nil, 0, fmt.Errorf("postgres: count search: %w", err)
 	}
 	listSQL := fmt.Sprintf(`
-SELECT id, title, description, genre, duration, rating, created_at
+SELECT id, title, description, genre, duration, rating, age_rating, created_at
 FROM movies %s
 ORDER BY title ASC
 LIMIT $%d OFFSET $%d`, where, argPos, argPos+1)

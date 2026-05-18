@@ -32,6 +32,9 @@ type ProfileFacade interface {
 	GetAllUsers(ctx context.Context, input domain.GetAllUsersInput) (*domain.GetAllUsersOutput, error)
 	BanUser(ctx context.Context, adminID, userID string, ban bool, reason string) (*domain.User, error)
 	GetUserByEmail(ctx context.Context, input domain.GetUserByEmailInput) (*domain.User, error)
+	TopUpBalance(ctx context.Context, userID string, amount float64) (*domain.User, error)
+	DeductBalance(ctx context.Context, userID string, amount float64) (*domain.User, error)
+	UpdateUserRole(ctx context.Context, adminID, userID string, role domain.Role) (*domain.User, error)
 }
 
 func NewHandler(auth AuthFacade, profile ProfileFacade) *Handler {
@@ -186,6 +189,43 @@ func (h *Handler) GetUserByEmail(ctx context.Context, req *userpb.GetUserByEmail
 	return &userpb.GetUserByEmailResponse{User: toProtoUser(user)}, nil
 }
 
+func (h *Handler) TopUpBalance(ctx context.Context, req *userpb.TopUpBalanceRequest) (*userpb.TopUpBalanceResponse, error) {
+	user, err := h.profile.TopUpBalance(ctx, req.UserId, req.Amount)
+	if err != nil {
+		return nil, apperrors.ToGRPC(err)
+	}
+	return &userpb.TopUpBalanceResponse{User: toProtoUser(user), Message: "balance topped up"}, nil
+}
+
+func (h *Handler) DeductBalance(ctx context.Context, req *userpb.DeductBalanceRequest) (*userpb.DeductBalanceResponse, error) {
+	user, err := h.profile.DeductBalance(ctx, req.UserId, req.Amount)
+	if err != nil {
+		return nil, apperrors.ToGRPC(err)
+	}
+	return &userpb.DeductBalanceResponse{User: toProtoUser(user), Message: "balance deducted"}, nil
+}
+
+func (h *Handler) UpdateUserRole(ctx context.Context, req *userpb.UpdateUserRoleRequest) (*userpb.UpdateUserRoleResponse, error) {
+	user, err := h.profile.UpdateUserRole(ctx, req.AdminId, req.UserId, protoToRole(req.Role))
+	if err != nil {
+		return nil, apperrors.ToGRPC(err)
+	}
+	return &userpb.UpdateUserRoleResponse{User: toProtoUser(user), Message: "role updated"}, nil
+}
+
+func protoToRole(r userpb.Role) domain.Role {
+	switch r {
+	case userpb.Role_ROLE_ADMIN:
+		return domain.RoleAdmin
+	case userpb.Role_ROLE_MODERATOR:
+		return domain.RoleModerator
+	case userpb.Role_ROLE_USER:
+		return domain.RoleUser
+	default:
+		return domain.RoleUser
+	}
+}
+
 func paginationFrom(req *userpb.GetAllUsersRequest) (page, pageSize int) {
 	page, pageSize = 1, 20
 	if req.Pagination != nil {
@@ -223,6 +263,7 @@ func toProtoUser(u *domain.User) *userpb.User {
 		Phone:     u.Phone,
 		Role:      roleToProto(u.Role),
 		IsBanned:  u.IsBanned,
+		Balance:   u.Balance,
 		CreatedAt: timestamppb.New(u.CreatedAt),
 		UpdatedAt: timestamppb.New(u.UpdatedAt),
 	}

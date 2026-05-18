@@ -34,14 +34,19 @@ func NewBookingUseCase(repo domain.BookingRepository, pool DB, pub EventPublishe
 	}
 }
 
-func (uc *BookingUseCase) CreateBooking(ctx context.Context, userID, sessionID, seatID, userEmail string) (*domain.Booking, error) {
+func (uc *BookingUseCase) CreateBooking(ctx context.Context, userID, sessionID, seatID, userEmail, ticketCategory string, amount float64) (*domain.Booking, error) {
+	if ticketCategory == "" {
+		ticketCategory = "adult"
+	}
 	booking := &domain.Booking{
-		ID:        uuid.NewString(),
-		UserID:    userID,
-		SessionID: sessionID,
-		SeatID:    seatID,
-		Status:    domain.StatusPending,
-		CreatedAt: time.Now(),
+		ID:             uuid.NewString(),
+		UserID:         userID,
+		SessionID:      sessionID,
+		SeatID:         seatID,
+		Status:         domain.StatusPending,
+		TicketCategory: ticketCategory,
+		AmountPaid:     amount,
+		CreatedAt:      time.Now(),
 	}
 
 	tx, err := uc.pool.Begin(ctx)

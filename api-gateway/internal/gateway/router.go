@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	bookingpb "booking-service/proto/booking"
 	moviepb "github.com/cinema-booking-system/movie-service/gen/go/movie"
 	userpb "github.com/cinema-booking-system/user-service/gen/go/user"
 	"github.com/gin-gonic/gin"
@@ -39,6 +40,7 @@ func NewRouter(cfg Config, clients Clients) *gin.Engine {
 	r.GET("/sessions/:id", s.getSession)
 	r.GET("/sessions/:id/seats", s.getAvailableSeats)
 	r.GET("/halls/:id", s.getHall)
+	r.GET("/cities", s.listCities)
 
 	protected := r.Group("/")
 	protected.Use(authMiddleware(cfg, clients.User))
@@ -50,6 +52,8 @@ func NewRouter(cfg Config, clients Clients) *gin.Engine {
 	}))
 	protected.POST("/auth/logout", s.logout)
 	protected.PUT("/users/password", s.changePassword)
+	protected.GET("/users/me", s.getProfile)
+	protected.POST("/wallet/topup", s.topUpWallet)
 	protected.POST("/bookings", s.createBooking)
 	protected.GET("/bookings", s.listUserBookings)
 	protected.GET("/bookings/history", s.getBookingHistory)
@@ -62,6 +66,7 @@ func NewRouter(cfg Config, clients Clients) *gin.Engine {
 	admin.Use(adminMiddleware())
 	admin.GET("/users", s.adminListUsers)
 	admin.POST("/users/:id/ban", s.adminBanUser)
+	admin.PUT("/users/:id/role", s.adminUpdateUserRole)
 	admin.POST("/movies", s.adminCreateMovie)
 	admin.PUT("/movies/:id", s.adminUpdateMovie)
 	admin.DELETE("/movies/:id", s.adminDeleteMovie)
@@ -235,19 +240,38 @@ func (s *Server) listSessions(c *gin.Context) {
 	}
 	ctx, cancel := s.requestContext(c)
 	defer cancel()
+	movieID := c.Query("movie_id")
 	resp, err := s.clients.Movie.ListSessions(ctx, &moviepb.ListSessionsRequest{
-		MovieId: c.Query("movie_id"),
+		MovieId: movieID,
 		Date:    date,
 		Limit:   limit,
 		Offset:  offset,
+		City:    c.Query("city"),
 	})
 	if err != nil {
 		failGRPC(c, err)
 		return
 	}
+	var ageRating int32
+	if movieID != "" {
+		if mv, err := s.clients.Movie.GetMovie(ctx, &moviepb.GetMovieRequest{Id: movieID}); err == nil && mv.GetMovie() != nil {
+			ageRating = mv.GetMovie().GetAgeRating()
+		}
+	}
 	out := make([]sessionJSON, 0, len(resp.GetSessions()))
 	for _, session := range resp.GetSessions() {
-		out = append(out, sessionFromProto(session))
+		item := sessionFromProto(session)
+		item.AgeRating = ageRating
+		if hallResp, err := s.clients.Movie.GetHall(ctx, &moviepb.GetHallRequest{HallId: session.GetHallId()}); err == nil && hallResp.GetHall() != nil {
+			h := hallResp.GetHall()
+			item.City = h.GetCity()
+			item.CinemaName = h.GetCinemaName()
+			item.HallName = h.GetName()
+		}
+		if seatsResp, err := s.clients.Movie.GetAvailableSeats(ctx, &moviepb.GetAvailableSeatsRequest{SessionId: session.GetId()}); err == nil {
+			item.AvailableSeats = int32(len(seatsResp.GetSeats()))
+		}
+		out = append(out, item)
 	}
 	ok(c, out)
 }
@@ -266,14 +290,25 @@ func (s *Server) getSession(c *gin.Context) {
 func (s *Server) getAvailableSeats(c *gin.Context) {
 	ctx, cancel := s.requestContext(c)
 	defer cancel()
-	resp, err := s.clients.Movie.GetAvailableSeats(ctx, &moviepb.GetAvailableSeatsRequest{SessionId: c.Param("id")})
+	sessionID := c.Param("id")
+	resp, err := s.clients.Movie.GetAvailableSeats(ctx, &moviepb.GetAvailableSeatsRequest{SessionId: sessionID})
 	if err != nil {
 		failGRPC(c, err)
 		return
 	}
+	taken := map[string]struct{}{}
+	if takenResp, err := s.clients.Booking.GetSessionTakenSeats(ctx, &bookingpb.GetSessionTakenSeatsRequest{SessionId: sessionID}); err == nil {
+		for _, id := range takenResp.GetSeatIds() {
+			taken[id] = struct{}{}
+		}
+	}
 	out := make([]seatJSON, 0, len(resp.GetSeats()))
 	for _, seat := range resp.GetSeats() {
-		out = append(out, seatFromProto(seat))
+		item := seatFromProto(seat)
+		if _, reserved := taken[item.ID]; reserved {
+			item.IsAvailable = false
+		}
+		out = append(out, item)
 	}
 	ok(c, out)
 }

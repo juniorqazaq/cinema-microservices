@@ -12,9 +12,11 @@ var (
 )
 
 type Hall struct {
-	ID       string
-	Name     string
-	Capacity int
+	ID         string
+	Name       string
+	Capacity   int
+	City       string
+	CinemaName string
 }
 
 type Seat struct {
@@ -43,7 +45,7 @@ type HallRepository interface {
 type SessionRepository interface {
 	Create(ctx context.Context, s *Session) (*Session, error)
 	GetByID(ctx context.Context, id string) (*Session, error)
-	List(ctx context.Context, movieID string, date *time.Time, limit, offset int) ([]*Session, int64, error)
+	List(ctx context.Context, movieID, city string, date *time.Time, limit, offset int) ([]*Session, int64, error)
 	GetByDate(ctx context.Context, day time.Time) ([]*Session, error)
 	GetByMovieID(ctx context.Context, movieID string) ([]*Session, error)
 }

@@ -20,12 +20,14 @@ type authTokens struct {
 }
 
 type userJSON struct {
-	ID        string `json:"id"`
-	Email     string `json:"email"`
-	Role      string `json:"role"`
-	IsBanned  bool   `json:"is_banned"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	ID        string  `json:"id"`
+	Email     string  `json:"email"`
+	FullName  string  `json:"full_name,omitempty"`
+	Role      string  `json:"role"`
+	IsBanned  bool    `json:"is_banned"`
+	Balance   float64 `json:"balance"`
+	CreatedAt string  `json:"created_at"`
+	UpdatedAt string  `json:"updated_at"`
 }
 
 type movieJSON struct {
@@ -35,13 +37,16 @@ type movieJSON struct {
 	Genre       string  `json:"genre"`
 	Duration    int32   `json:"duration"`
 	Rating      float64 `json:"rating"`
+	AgeRating   int32   `json:"age_rating"`
 	CreatedAt   string  `json:"created_at"`
 }
 
 type hallJSON struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Capacity int32  `json:"capacity"`
+	ID         string `json:"id"`
+	Name       string `json:"name"`
+	Capacity   int32  `json:"capacity"`
+	City       string `json:"city"`
+	CinemaName string `json:"cinema_name"`
 }
 
 type seatJSON struct {
@@ -53,20 +58,27 @@ type seatJSON struct {
 }
 
 type sessionJSON struct {
-	ID        string  `json:"id"`
-	MovieID   string  `json:"movie_id"`
-	HallID    string  `json:"hall_id"`
-	StartTime string  `json:"start_time"`
-	Price     float64 `json:"price"`
+	ID             string  `json:"id"`
+	MovieID        string  `json:"movie_id"`
+	HallID         string  `json:"hall_id"`
+	StartTime      string  `json:"start_time"`
+	Price          float64 `json:"price"`
+	City           string  `json:"city,omitempty"`
+	CinemaName     string  `json:"cinema_name,omitempty"`
+	HallName       string  `json:"hall_name,omitempty"`
+	AvailableSeats int32   `json:"available_seats,omitempty"`
+	AgeRating      int32   `json:"age_rating,omitempty"`
 }
 
 type bookingJSON struct {
-	ID        string `json:"id"`
-	UserID    string `json:"user_id"`
-	SessionID string `json:"session_id"`
-	SeatID    string `json:"seat_id"`
-	Status    string `json:"status"`
-	CreatedAt string `json:"created_at"`
+	ID             string  `json:"id"`
+	UserID         string  `json:"user_id"`
+	SessionID      string  `json:"session_id"`
+	SeatID         string  `json:"seat_id"`
+	Status         string  `json:"status"`
+	TicketCategory string  `json:"ticket_category,omitempty"`
+	AmountPaid     float64 `json:"amount_paid,omitempty"`
+	CreatedAt      string  `json:"created_at"`
 }
 
 type paymentJSON struct {
@@ -136,8 +148,10 @@ func userFromProto(u *userpb.User) userJSON {
 	return userJSON{
 		ID:        u.GetUserId(),
 		Email:     u.GetEmail(),
+		FullName:  u.GetFullName(),
 		Role:      roleForFrontend(u.GetRole()),
 		IsBanned:  u.GetIsBanned(),
+		Balance:   u.GetBalance(),
 		CreatedAt: tsString(u.GetCreatedAt()),
 		UpdatedAt: tsString(u.GetUpdatedAt()),
 	}
@@ -154,6 +168,7 @@ func movieFromProto(m *moviepb.Movie) movieJSON {
 		Genre:       m.GetGenre(),
 		Duration:    m.GetDuration(),
 		Rating:      m.GetRating(),
+		AgeRating:   m.GetAgeRating(),
 		CreatedAt:   tsString(m.GetCreatedAt()),
 	}
 }
@@ -163,9 +178,11 @@ func hallFromProto(h *moviepb.Hall) hallJSON {
 		return hallJSON{}
 	}
 	return hallJSON{
-		ID:       h.GetId(),
-		Name:     h.GetName(),
-		Capacity: h.GetCapacity(),
+		ID:         h.GetId(),
+		Name:       h.GetName(),
+		Capacity:   h.GetCapacity(),
+		City:       h.GetCity(),
+		CinemaName: h.GetCinemaName(),
 	}
 }
 
@@ -200,12 +217,14 @@ func bookingFromProto(b *bookingpb.Booking) bookingJSON {
 		return bookingJSON{}
 	}
 	return bookingJSON{
-		ID:        b.GetId(),
-		UserID:    b.GetUserId(),
-		SessionID: b.GetSessionId(),
-		SeatID:    b.GetSeatId(),
-		Status:    b.GetStatus(),
-		CreatedAt: unixString(b.GetCreatedAt()),
+		ID:             b.GetId(),
+		UserID:         b.GetUserId(),
+		SessionID:      b.GetSessionId(),
+		SeatID:         b.GetSeatId(),
+		Status:         b.GetStatus(),
+		TicketCategory: b.GetTicketCategory(),
+		AmountPaid:     b.GetAmountPaid(),
+		CreatedAt:      unixString(b.GetCreatedAt()),
 	}
 }
 

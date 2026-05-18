@@ -40,7 +40,7 @@ func NewPool(ctx context.Context, dsn string) (*pgxpool.Pool, error) {
 const createUserSQL = `
 INSERT INTO users (email, password_hash, full_name, phone, role, is_banned, ban_reason, created_at, updated_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-RETURNING id, email, password_hash, full_name, phone, role, is_banned, ban_reason, created_at, updated_at`
+RETURNING id, email, password_hash, full_name, phone, role, is_banned, ban_reason, balance, created_at, updated_at`
 
 func (r *UserRepository) Create(ctx context.Context, u *domain.User) (*domain.User, error) {
 	now := time.Now().UTC()
@@ -59,7 +59,7 @@ func (r *UserRepository) Create(ctx context.Context, u *domain.User) (*domain.Us
 }
 
 const getUserByIDSQL = `
-SELECT id, email, password_hash, full_name, phone, role, is_banned, ban_reason, created_at, updated_at
+SELECT id, email, password_hash, full_name, phone, role, is_banned, ban_reason, balance, created_at, updated_at
 FROM users WHERE id = $1`
 
 func (r *UserRepository) GetByID(ctx context.Context, id string) (*domain.User, error) {
@@ -75,7 +75,7 @@ func (r *UserRepository) GetByID(ctx context.Context, id string) (*domain.User, 
 }
 
 const getUserByEmailSQL = `
-SELECT id, email, password_hash, full_name, phone, role, is_banned, ban_reason, created_at, updated_at
+SELECT id, email, password_hash, full_name, phone, role, is_banned, ban_reason, balance, created_at, updated_at
 FROM users WHERE email = $1`
 
 func (r *UserRepository) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
@@ -94,7 +94,7 @@ const updateUserSQL = `
 UPDATE users
 SET full_name = $1, phone = $2, updated_at = $3
 WHERE id = $4
-RETURNING id, email, password_hash, full_name, phone, role, is_banned, ban_reason, created_at, updated_at`
+RETURNING id, email, password_hash, full_name, phone, role, is_banned, ban_reason, balance, created_at, updated_at`
 
 func (r *UserRepository) Update(ctx context.Context, u *domain.User) (*domain.User, error) {
 	row := r.db.QueryRow(ctx, updateUserSQL,
@@ -173,7 +173,7 @@ func (r *UserRepository) GetAll(
 	}
 
 	listSQL := fmt.Sprintf(`
-		SELECT id, email, password_hash, full_name, phone, role, is_banned, ban_reason, created_at, updated_at
+		SELECT id, email, password_hash, full_name, phone, role, is_banned, ban_reason, balance, created_at, updated_at
 		FROM users %s
 		ORDER BY created_at DESC
 		LIMIT $%d OFFSET $%d`, where, argIdx, argIdx+1)
@@ -200,7 +200,7 @@ const banUserSQL = `
 UPDATE users
 SET is_banned = $1, ban_reason = $2, updated_at = $3
 WHERE id = $4
-RETURNING id, email, password_hash, full_name, phone, role, is_banned, ban_reason, created_at, updated_at`
+RETURNING id, email, password_hash, full_name, phone, role, is_banned, ban_reason, balance, created_at, updated_at`
 
 func (r *UserRepository) Ban(ctx context.Context, userID string, ban bool, reason string) (*domain.User, error) {
 	row := r.db.QueryRow(ctx, banUserSQL, ban, reason, time.Now().UTC(), userID)
@@ -223,7 +223,7 @@ func scanUser(row scannable) (*domain.User, error) {
 	var role string
 	err := row.Scan(
 		&u.ID, &u.Email, &u.PasswordHash, &u.FullName, &u.Phone,
-		&role, &u.IsBanned, &u.BanReason, &u.CreatedAt, &u.UpdatedAt,
+		&role, &u.IsBanned, &u.BanReason, &u.Balance, &u.CreatedAt, &u.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
@@ -237,13 +237,61 @@ func scanUserFromRows(rows pgx.Rows) (*domain.User, error) {
 	var role string
 	err := rows.Scan(
 		&u.ID, &u.Email, &u.PasswordHash, &u.FullName, &u.Phone,
-		&role, &u.IsBanned, &u.BanReason, &u.CreatedAt, &u.UpdatedAt,
+		&role, &u.IsBanned, &u.BanReason, &u.Balance, &u.CreatedAt, &u.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
 	u.Role = domain.Role(role)
 	return &u, nil
+}
+
+const topUpBalanceSQL = `
+UPDATE users SET balance = balance + $1, updated_at = $2 WHERE id = $3
+RETURNING id, email, password_hash, full_name, phone, role, is_banned, ban_reason, balance, created_at, updated_at`
+
+func (r *UserRepository) TopUpBalance(ctx context.Context, userID string, amount float64) (*domain.User, error) {
+	if amount <= 0 {
+		return nil, domain.ErrInvalidArgument
+	}
+	row := r.db.QueryRow(ctx, topUpBalanceSQL, amount, time.Now().UTC(), userID)
+	return scanUser(row)
+}
+
+const deductBalanceSQL = `
+UPDATE users SET balance = balance - $1, updated_at = $2
+WHERE id = $3 AND balance >= $1
+RETURNING id, email, password_hash, full_name, phone, role, is_banned, ban_reason, balance, created_at, updated_at`
+
+func (r *UserRepository) DeductBalance(ctx context.Context, userID string, amount float64) (*domain.User, error) {
+	if amount <= 0 {
+		return nil, domain.ErrInvalidArgument
+	}
+	row := r.db.QueryRow(ctx, deductBalanceSQL, amount, time.Now().UTC(), userID)
+	u, err := scanUser(row)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, domain.ErrInsufficientBalance
+		}
+		return nil, fmt.Errorf("postgres: deduct balance: %w", err)
+	}
+	return u, nil
+}
+
+const updateRoleSQL = `
+UPDATE users SET role = $1, updated_at = $2 WHERE id = $3
+RETURNING id, email, password_hash, full_name, phone, role, is_banned, ban_reason, balance, created_at, updated_at`
+
+func (r *UserRepository) UpdateRole(ctx context.Context, userID string, role domain.Role) (*domain.User, error) {
+	row := r.db.QueryRow(ctx, updateRoleSQL, string(role), time.Now().UTC(), userID)
+	u, err := scanUser(row)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, domain.ErrUserNotFound
+		}
+		return nil, fmt.Errorf("postgres: update role: %w", err)
+	}
+	return u, nil
 }
 
 func isUniqueViolation(err error) bool {

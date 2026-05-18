@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	bookingpb "booking-service/proto/booking"
+	userpb "github.com/cinema-booking-system/user-service/gen/go/user"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,8 +15,10 @@ func (s *Server) createBooking(c *gin.Context) {
 		return
 	}
 	var req struct {
-		SessionID string `json:"session_id"`
-		SeatID    string `json:"seat_id"`
+		SessionID      string  `json:"session_id"`
+		SeatID         string  `json:"seat_id"`
+		TicketCategory string  `json:"ticket_category"`
+		Amount         float64 `json:"amount"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		fail(c, http.StatusBadRequest, "invalid request body")
@@ -24,10 +27,12 @@ func (s *Server) createBooking(c *gin.Context) {
 	ctx, cancel := s.requestContext(c)
 	defer cancel()
 	resp, err := s.clients.Booking.CreateBooking(ctx, &bookingpb.CreateBookingRequest{
-		UserId:    user.ID,
-		SessionId: req.SessionID,
-		SeatId:    req.SeatID,
-		UserEmail: user.Email,
+		UserId:         user.ID,
+		SessionId:      req.SessionID,
+		SeatId:         req.SeatID,
+		UserEmail:      user.Email,
+		TicketCategory: req.TicketCategory,
+		Amount:         req.Amount,
 	})
 	if err != nil {
 		failGRPC(c, err)
@@ -105,8 +110,9 @@ func (s *Server) confirmPayment(c *gin.Context) {
 		return
 	}
 	var req struct {
-		BookingID string  `json:"booking_id"`
-		Amount    float64 `json:"amount"`
+		BookingID     string  `json:"booking_id"`
+		Amount        float64 `json:"amount"`
+		UseWallet     bool    `json:"use_wallet"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		fail(c, http.StatusBadRequest, "invalid request body")
@@ -121,6 +127,15 @@ func (s *Server) confirmPayment(c *gin.Context) {
 	}
 	ctx, cancel := s.requestContext(c)
 	defer cancel()
+	if req.UseWallet {
+		if _, err := s.clients.User.DeductBalance(ctx, &userpb.DeductBalanceRequest{
+			UserId: user.ID,
+			Amount: req.Amount,
+		}); err != nil {
+			failGRPC(c, err)
+			return
+		}
+	}
 	resp, err := s.clients.Booking.ConfirmPayment(ctx, &bookingpb.ConfirmPaymentRequest{
 		BookingId: req.BookingID,
 		Amount:    req.Amount,

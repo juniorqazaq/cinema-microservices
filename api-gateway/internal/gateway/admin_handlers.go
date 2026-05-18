@@ -85,12 +85,17 @@ func (s *Server) adminCreateMovie(c *gin.Context) {
 	}
 	ctx, cancel := s.requestContext(c)
 	defer cancel()
+	age := req.AgeRating.Value()
+	if age == 0 {
+		age = 12
+	}
 	resp, err := s.clients.Movie.CreateMovie(ctx, &moviepb.CreateMovieRequest{
 		Title:         req.Title.Value(),
 		Description:   req.Description.Value(),
 		Genre:         req.Genre.Value(),
 		Duration:      req.Duration.Value(),
 		Rating:        req.Rating.Value(),
+		AgeRating:     age,
 		RequesterRole: movieRole(user.Role),
 	})
 	if err != nil {
@@ -131,6 +136,10 @@ func (s *Server) adminUpdateMovie(c *gin.Context) {
 
 	ctx, cancel = s.requestContext(c)
 	defer cancel()
+	age := req.AgeRating.Or(movie.GetAgeRating())
+	if age == 0 {
+		age = 12
+	}
 	resp, err := s.clients.Movie.UpdateMovie(ctx, &moviepb.UpdateMovieRequest{
 		Id:            c.Param("id"),
 		Title:         title,
@@ -138,6 +147,7 @@ func (s *Server) adminUpdateMovie(c *gin.Context) {
 		Genre:         genre,
 		Duration:      duration,
 		Rating:        rating,
+		AgeRating:     age,
 		RequesterRole: movieRole(user.Role),
 	})
 	if err != nil {
@@ -173,8 +183,10 @@ func (s *Server) adminCreateHall(c *gin.Context) {
 		return
 	}
 	var req struct {
-		Name     string `json:"name"`
-		Capacity int32  `json:"capacity"`
+		Name       string `json:"name"`
+		Capacity   int32  `json:"capacity"`
+		City       string `json:"city"`
+		CinemaName string `json:"cinema_name"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		fail(c, http.StatusBadRequest, "invalid request body")
@@ -182,9 +194,15 @@ func (s *Server) adminCreateHall(c *gin.Context) {
 	}
 	ctx, cancel := s.requestContext(c)
 	defer cancel()
+	city := req.City
+	if city == "" {
+		city = "Astana"
+	}
 	resp, err := s.clients.Movie.CreateHall(ctx, &moviepb.CreateHallRequest{
 		Name:          req.Name,
 		Capacity:      req.Capacity,
+		City:          city,
+		CinemaName:    req.CinemaName,
 		RequesterRole: movieRole(user.Role),
 	})
 	if err != nil {
@@ -261,6 +279,7 @@ type moviePayload struct {
 	Genre       optionalString  `json:"genre"`
 	Duration    optionalInt32   `json:"duration"`
 	Rating      optionalFloat64 `json:"rating"`
+	AgeRating   optionalInt32   `json:"age_rating"`
 }
 
 type optionalString struct {
