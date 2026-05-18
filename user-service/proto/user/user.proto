@@ -23,6 +23,7 @@ message User {
   bool                      is_banned  = 6;
   google.protobuf.Timestamp created_at = 7;
   google.protobuf.Timestamp updated_at = 8;
+  double                    balance    = 9;
 }
 
 message PaginationRequest {
@@ -170,6 +171,37 @@ message GetUserByEmailResponse {
   User user = 1;
 }
 
+message TopUpBalanceRequest {
+  string user_id = 1;
+  double amount  = 2;
+}
+
+message TopUpBalanceResponse {
+  User   user    = 1;
+  string message = 2;
+}
+
+message DeductBalanceRequest {
+  string user_id = 1;
+  double amount  = 2;
+}
+
+message DeductBalanceResponse {
+  User   user    = 1;
+  string message = 2;
+}
+
+message UpdateUserRoleRequest {
+  string admin_id = 1;
+  string user_id  = 2;
+  Role   role     = 3;
+}
+
+message UpdateUserRoleResponse {
+  User   user    = 1;
+  string message = 2;
+}
+
 service UserService {
   rpc Register       (RegisterRequest)       returns (RegisterResponse);
   rpc Login          (LoginRequest)          returns (LoginResponse);
@@ -183,4 +215,7 @@ service UserService {
   rpc GetAllUsers    (GetAllUsersRequest)    returns (GetAllUsersResponse);
   rpc BanUser        (BanUserRequest)        returns (BanUserResponse);
   rpc GetUserByEmail (GetUserByEmailRequest) returns (GetUserByEmailResponse);
+  rpc TopUpBalance   (TopUpBalanceRequest)   returns (TopUpBalanceResponse);
+  rpc DeductBalance  (DeductBalanceRequest)  returns (DeductBalanceResponse);
+  rpc UpdateUserRole (UpdateUserRoleRequest) returns (UpdateUserRoleResponse);
 }
