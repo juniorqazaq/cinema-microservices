@@ -1,0 +1,35 @@
+{
+  "title": "Booking Service",
+  "uid": "booking-service",
+  "tags": ["cinema", "booking-service"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1, "title": "gRPC Request Rate", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [{ "expr": "rate(grpc_server_handled_total{job=\"booking-service\"}[1m])", "legendFormat": "{{grpc_method}}" }]
+    },
+    {
+      "id": 2, "title": "Bookings Created", "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "targets": [{ "expr": "bookings_created_total{job=\"booking-service\"}" }]
+    },
+    {
+      "id": 3, "title": "gRPC Latency p95", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [{ "expr": "histogram_quantile(0.95, rate(grpc_server_handling_seconds_bucket{job=\"booking-service\"}[5m]))", "legendFormat": "p95" }]
+    },
+    {
+      "id": 4, "title": "NATS Messages", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [{ "expr": "rate(nats_messages_published_total{job=\"booking-service\"}[1m])", "legendFormat": "{{subject}}" }]
+    },
+    {
+      "id": 5, "title": "Logs", "type": "logs",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "targets": [{ "datasource": { "type": "loki" }, "expr": "{service=\"booking-service\"}" }]
+    }
+  ]
+}

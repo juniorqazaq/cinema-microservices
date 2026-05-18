@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
+	"net/http"
 
 	userpb "github.com/cinema-booking-system/user-service/gen/go/user"
 	"github.com/cinema-booking-system/user-service/internal/health"
+	grpcprom "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -27,18 +30,40 @@ func NewServer(
 	db *pgxpool.Pool,
 	rdb *redis.Client,
 ) *Server {
+	grpcprom.EnableHandlingTimeHistogram()
+
 	srv := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
+			grpcprom.UnaryServerInterceptor,
 			UnaryRecoveryInterceptor(logger),
 			UnaryTimingInterceptor(logger),
 			UnaryRequestLoggingInterceptor(logger),
 		),
+		grpc.ChainStreamInterceptor(
+			grpcprom.StreamServerInterceptor,
+		),
 	)
 	userpb.RegisterUserServiceServer(srv, handler)
+	grpcprom.Register(srv)
+
 	if db != nil && rdb != nil {
 		health.Register(srv, health.NewServer(db, rdb, logger))
 	}
 	reflection.Register(srv)
+
+	// Prometheus metrics HTTP server :9101
+	go func() {
+		mux := http.NewServeMux()
+		mux.Handle("/metrics", promhttp.Handler())
+		mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		})
+		logger.Info("metrics server listening", "addr", ":9101")
+		if err := http.ListenAndServe(":9101", mux); err != nil {
+			logger.Error("metrics server failed", "err", err)
+		}
+	}()
+
 	return &Server{grpcSrv: srv, port: port, logger: logger}
 }
 

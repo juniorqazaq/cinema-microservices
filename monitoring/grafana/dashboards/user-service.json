@@ -1,0 +1,40 @@
+{
+  "title": "User Service",
+  "uid": "user-service",
+  "tags": ["cinema", "user-service"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1, "title": "gRPC Request Rate", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [{ "expr": "rate(grpc_server_handled_total{job=\"user-service\"}[1m])", "legendFormat": "{{grpc_method}}" }]
+    },
+    {
+      "id": 2, "title": "gRPC Error Rate", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [{ "expr": "rate(grpc_server_handled_total{job=\"user-service\",grpc_code!=\"OK\"}[1m])", "legendFormat": "{{grpc_method}}" }]
+    },
+    {
+      "id": 3, "title": "gRPC Latency p95", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [{ "expr": "histogram_quantile(0.95, rate(grpc_server_handling_seconds_bucket{job=\"user-service\"}[5m]))", "legendFormat": "p95 {{grpc_method}}" }]
+    },
+    {
+      "id": 4, "title": "Goroutines", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [{ "expr": "go_goroutines{job=\"user-service\"}", "legendFormat": "goroutines" }]
+    },
+    {
+      "id": 5, "title": "Memory", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [{ "expr": "go_memstats_alloc_bytes{job=\"user-service\"}", "legendFormat": "allocated" }]
+    },
+    {
+      "id": 6, "title": "Logs", "type": "logs",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [{ "datasource": { "type": "loki" }, "expr": "{service=\"user-service\"}" }]
+    }
+  ]
+}

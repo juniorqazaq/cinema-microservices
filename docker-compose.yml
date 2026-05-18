@@ -1,161 +1,167 @@
-version: '3.8'
+version: "3.9"
 
 services:
   postgres:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
+    container_name: cinema_postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: booking
+      POSTGRES_USER: cinema
+      POSTGRES_PASSWORD: cinema_secret
+      POSTGRES_DB: cinema_db
     ports:
       - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  nats:
-    image: nats:latest
-    ports:
-      - "4222:4222"
-      - "8222:8222"
-
-  user-postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: ${USER_DB_USER:-cinema}
-      POSTGRES_PASSWORD: ${USER_DB_PASSWORD:-cinema_secret}
-      POSTGRES_DB: ${USER_DB_NAME:-cinema_db}
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${USER_DB_USER:-cinema} -d ${USER_DB_NAME:-cinema_db}" ]
+      test: ["CMD-SHELL", "pg_isready -U cinema -d cinema_db"]
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - cinema-net
 
-  user-redis:
+  redis:
     image: redis:7-alpine
+    container_name: cinema_redis
+    restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6380:6379"
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 10
+    networks:
+      - cinema-net
 
-  user-migrate:
+  migrate:
     image: migrate/migrate:v4.17.1
+    container_name: cinema_migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
     volumes:
       - ./user-service/migrations:/migrations
-    command:
-      - -path=/migrations
-      - -database
-      - postgres://${USER_DB_USER:-cinema}:${USER_DB_PASSWORD:-cinema_secret}@user-postgres:5432/${USER_DB_NAME:-cinema_db}?sslmode=disable
-      - up
-    depends_on:
-      user-postgres:
-        condition: service_healthy
+    command: >
+      -path=/migrations
+      -database postgres://cinema:cinema_secret@postgres:5432/cinema_db?sslmode=disable
+      up
+    networks:
+      - cinema-net
 
   user-service:
     build:
       context: ./user-service
       dockerfile: Dockerfile
-    environment:
-      DB_HOST: user-postgres
-      DB_PORT: "5432"
-      DB_USER: ${USER_DB_USER:-cinema}
-      DB_PASSWORD: ${USER_DB_PASSWORD:-cinema_secret}
-      DB_NAME: ${USER_DB_NAME:-cinema_db}
-      REDIS_ADDR: user-redis:6379
-      REDIS_PASSWORD: ${USER_REDIS_PASSWORD:-}
-      JWT_SECRET: ${USER_JWT_SECRET:-change-me-to-a-long-random-secret-in-production}
-      JWT_ACCESS_TTL: ${USER_JWT_ACCESS_TTL:-15m}
-      JWT_REFRESH_TTL: ${USER_JWT_REFRESH_TTL:-168h}
-      JWT_ISSUER: ${USER_JWT_ISSUER:-cinema-booking-system}
-      JWT_AUDIENCE: ${USER_JWT_AUDIENCE:-cinema-users}
-      GRPC_PORT: "50051"
+    container_name: cinema_user_service
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     ports:
       - "50051:50051"
-    depends_on:
-      user-postgres:
-        condition: service_healthy
-      user-redis:
-        condition: service_healthy
-      user-migrate:
-        condition: service_completed_successfully
-
-  booking-migrate:
-    image: migrate/migrate:v4.17.1
-    volumes:
-      - ./booking-service/migrations:/migrations
-    command:
-      - -path=/migrations
-      - -database
-      - postgres://postgres:postgres@postgres:5432/booking?sslmode=disable
-      - up
-    depends_on:
-      postgres:
-        condition: service_healthy
-
-  booking-service:
-    build:
-      context: ./booking-service
-    environment:
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/booking?sslmode=disable
-      NATS_URL: nats://nats:4222
-      GRPC_PORT: 50053
-    ports:
-      - "50053:50053"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      nats:
-        condition: service_started
-      booking-migrate:
-        condition: service_completed_successfully
-
-  api-gateway:
-    build:
-      context: .
-      dockerfile: ./api-gateway/Dockerfile
-    environment:
-      HTTP_ADDR: ":8080"
-      USER_GRPC_ADDR: "${USER_GRPC_ADDR:-user-service:50051}"
-      MOVIE_GRPC_ADDR: "${MOVIE_GRPC_ADDR:-host.docker.internal:50052}"
-      BOOKING_GRPC_ADDR: "${BOOKING_GRPC_ADDR:-booking-service:50053}"
-      CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS:-http://localhost:5173}"
-    ports:
-      - "8080:8080"
-    depends_on:
-      user-service:
-        condition: service_started
-      booking-service:
-        condition: service_started
-
-  notification-service:
-    build:
-      context: ./notification-service
-    environment:
-      NATS_URL: nats://nats:4222
-      SMTP_USER: "medinanurbek@gmail.com"
-      SMTP_PASS: "your-app-password"
-    depends_on:
-      nats:
-        condition: service_started
-  movie-service:
-    build:
-      context: ./movie-service
-      dockerfile: Dockerfile
+      - "9101:9101"
+    env_file:
+      - ./user-service/.env
     environment:
       DB_HOST: postgres
-      DB_PORT: "5432"
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: movie_db
-      GRPC_PORT: "50052"
-      REDIS_ADDR: user-redis:6379
+      REDIS_ADDR: redis:6379
+    networks:
+      - cinema-net
+    labels:
+      service: "user-service"
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: cinema_prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
     ports:
-      - "50052:50052"
+      - "9090:9090"
+    networks:
+      - cinema-net
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: cinema_grafana
+    restart: unless-stopped
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3000:3000"
     depends_on:
-      postgres:
-        condition: service_healthy
+      - prometheus
+      - loki
+      - tempo
+    networks:
+      - cinema-net
+
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: cinema_loki
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - cinema-net
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: cinema_promtail
+    restart: unless-stopped
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./monitoring/loki/promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - cinema-net
+
+  tempo:
+    image: grafana/tempo:2.4.0
+    container_name: cinema_tempo
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/tempo/tempo-config.yml:/etc/tempo/tempo.yaml
+      - tempo_data:/var/tempo
+    command: -config.file=/etc/tempo/tempo.yaml
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - cinema-net
+
+volumes:
+  postgres_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  tempo_data:
+
+networks:
+  cinema-net:
+    driver: bridge

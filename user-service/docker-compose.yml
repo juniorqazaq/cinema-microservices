@@ -18,6 +18,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - cinema-net
 
   redis:
     image: redis:7-alpine
@@ -30,6 +32,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    networks:
+      - cinema-net
 
   migrate:
     image: migrate/migrate:v4.17.1
@@ -43,6 +47,8 @@ services:
       -path=/migrations
       -database postgres://cinema:cinema_secret@postgres:5432/cinema_db?sslmode=disable
       up
+    networks:
+      - cinema-net
 
   user-service:
     build:
@@ -59,11 +65,105 @@ services:
         condition: service_completed_successfully
     ports:
       - "50051:50051"
+      - "9101:9101"   
     env_file:
       - .env
     environment:
       DB_HOST: postgres
       REDIS_ADDR: redis:6379
+    networks:
+      - cinema-net
+    labels:
+      logging: "promtail"
+      service: "user-service"
+
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: cinema_prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    networks:
+      - cinema-net
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: cinema_grafana
+    restart: unless-stopped
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+    networks:
+      - cinema-net
+
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: cinema_loki
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yaml
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - cinema-net
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: cinema_promtail
+    restart: unless-stopped
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./monitoring/loki/promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    depends_on:
+      - loki
+    networks:
+      - cinema-net
+
+  tempo:
+    image: grafana/tempo:2.4.0
+    container_name: cinema_tempo
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/tempo/tempo-config.yml:/etc/tempo/tempo.yaml
+      - tempo_data:/var/tempo
+    command: -config.file=/etc/tempo/tempo.yaml
+    ports:
+      - "3200:3200"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - cinema-net
 
 volumes:
   postgres_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:
+  tempo_data:
+
+networks:
+  cinema-net:
+    driver: bridge
