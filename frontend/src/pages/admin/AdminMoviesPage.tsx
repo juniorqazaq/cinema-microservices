@@ -22,7 +22,7 @@ export function AdminMoviesPage() {
   const queryClient = useQueryClient()
   const [showAdd, setShowAdd] = useState(false)
   const [editing, setEditing] = useState<Movie | null>(null)
-  const [halls, setHalls] = useState<{ id: string; name: string }[]>([])
+  const [halls, setHalls] = useState<{ id: string; name: string; city?: string }[]>([])
 
   const moviesQuery = useQuery({
     queryKey: ['movies', 'admin'],
@@ -37,6 +37,7 @@ export function AdminMoviesPage() {
         genre: body.genre,
         duration: body.duration,
         rating: body.rating,
+        age_rating: body.age_rating,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['movies'] })
@@ -52,6 +53,7 @@ export function AdminMoviesPage() {
         genre: vars.body.genre,
         duration: vars.body.duration,
         rating: vars.body.rating,
+        age_rating: vars.body.age_rating,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['movies'] })
@@ -67,10 +69,22 @@ export function AdminMoviesPage() {
   })
 
   const createHallMut = useMutation({
-    mutationFn: (values: { name: string; capacity: number }) =>
-      createHallApi(values.name, values.capacity),
+    mutationFn: (values: {
+      name: string
+      capacity: number
+      city: string
+      cinema_name: string
+    }) =>
+      createHallApi(values.name, values.capacity, values.city, values.cinema_name),
     onSuccess: (hall) => {
-      setHalls((prev) => [...prev, { id: hall.id, name: hall.name }])
+      setHalls((prev) => [
+        ...prev,
+        {
+          id: hall.id,
+          name: `${hall.cinema_name || 'Cinema'} · ${hall.name}`,
+          city: hall.city,
+        },
+      ])
     },
   })
 

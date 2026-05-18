@@ -2,9 +2,8 @@ import { Link } from 'react-router-dom'
 import { format, parseISO } from 'date-fns'
 import type { CatalogMovie } from '../../types/movie'
 import { backdropUrl, posterUrl } from '../../lib/movieImages'
-import { genreIdsToLabel, catalogToMovie } from '../../lib/catalogAdapter'
+import { genreIdsToLabel } from '../../lib/catalogAdapter'
 import { BuyTicketButton } from './BuyTicketButton'
-import { ShowtimeBookingPanel } from './ShowtimeBookingPanel'
 
 export function CatalogMovieDetail({ movie }: { movie: CatalogMovie }) {
   const year = movie.release_date
@@ -133,7 +132,6 @@ export function CatalogMovieDetail({ movie }: { movie: CatalogMovie }) {
         </section>
       ) : null}
 
-      <ShowtimeBookingPanel movie={catalogToMovie(movie)} />
     </div>
   )
 }

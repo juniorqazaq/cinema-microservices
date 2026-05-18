@@ -6,6 +6,7 @@ import {
   registerUser,
 } from '../api/auth'
 import { useAuthStore } from '../store/authStore'
+import { fetchProfile } from '../api/wallet'
 import { userFromAccessToken } from '../utils/jwt'
 
 export function useAuth() {
@@ -19,7 +20,11 @@ export function useAuth() {
     mutationFn: async (vars: { email: string; password: string }) => {
       const tokens = await loginUser(vars.email, vars.password)
       setTokens(tokens.access_token, tokens.refresh_token)
-      setUser(userFromAccessToken(tokens.access_token, vars.email))
+      try {
+        setUser(await fetchProfile())
+      } catch {
+        setUser(userFromAccessToken(tokens.access_token, vars.email))
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] })
@@ -30,7 +35,11 @@ export function useAuth() {
     mutationFn: async (vars: { email: string; password: string }) => {
       const tokens = await registerUser(vars.email, vars.password)
       setTokens(tokens.access_token, tokens.refresh_token)
-      setUser(userFromAccessToken(tokens.access_token, vars.email))
+      try {
+        setUser(await fetchProfile())
+      } catch {
+        setUser(userFromAccessToken(tokens.access_token, vars.email))
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] })

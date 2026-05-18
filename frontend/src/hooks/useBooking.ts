@@ -49,7 +49,12 @@ export function useBookSeatAndPay() {
       seat_id: string
       amount: number
     }) => {
-      const booking = await createBooking(vars.session_id, vars.seat_id)
+      const booking = await createBooking(
+        vars.session_id,
+        vars.seat_id,
+        'adult',
+        vars.amount,
+      )
       const payment = await confirmPayment(booking.id, vars.amount)
       return { booking, payment }
     },

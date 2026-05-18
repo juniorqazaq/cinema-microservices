@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { banUser } from '../../api/admin'
+import { banUser, updateUserRole } from '../../api/admin'
 import { useAdminUsers } from '../../hooks/useBooking'
 import { UserTable } from '../../components/admin/UserTable'
 import { ErrorBanner } from '../../components/ui/ErrorBanner'
@@ -10,7 +10,18 @@ import { getErrorMessage } from '../../utils/errorHandler'
 export function AdminUsersPage() {
   const queryClient = useQueryClient()
   const [banningId, setBanningId] = useState<string | null>(null)
+  const [roleUpdatingId, setRoleUpdatingId] = useState<string | null>(null)
   const usersQuery = useAdminUsers(1, 50)
+
+  const roleMutation = useMutation({
+    mutationFn: (vars: { userId: string; role: 'user' | 'admin' }) =>
+      updateUserRole(vars.userId, vars.role),
+    onMutate: (vars) => setRoleUpdatingId(vars.userId),
+    onSettled: () => setRoleUpdatingId(null),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
+    },
+  })
 
   const banMutation = useMutation({
     mutationFn: (userId: string) => banUser(userId),
@@ -45,11 +56,18 @@ export function AdminUsersPage() {
       {banMutation.isError ? (
         <ErrorBanner message={getErrorMessage(banMutation.error)} />
       ) : null}
+      {roleMutation.isError ? (
+        <ErrorBanner message={getErrorMessage(roleMutation.error)} />
+      ) : null}
       <UserTable
         users={users}
         banningId={banningId}
+        roleUpdatingId={roleUpdatingId}
         onBan={(id) => {
           void banMutation.mutateAsync(id)
+        }}
+        onRoleChange={(id, role) => {
+          void roleMutation.mutateAsync({ userId: id, role })
         }}
       />
     </div>

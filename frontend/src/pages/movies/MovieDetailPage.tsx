@@ -6,7 +6,6 @@ import { useMemo } from 'react'
 import { useMovie } from '../../hooks/useMovies'
 import { useTmdbMovie } from '../../hooks/useTmdbMovie'
 import { BuyTicketButton } from '../../components/movie/BuyTicketButton'
-import { ShowtimeBookingPanel } from '../../components/movie/ShowtimeBookingPanel'
 import { ErrorBanner } from '../../components/ui/ErrorBanner'
 import { getErrorMessage } from '../../utils/errorHandler'
 import { formatDuration } from '../../utils/format'
@@ -135,7 +134,8 @@ export function MovieDetailPage() {
         </div>
       </div>
 
-      <ShowtimeBookingPanel movie={movie} />
     </div>
   )
 }
+
+
