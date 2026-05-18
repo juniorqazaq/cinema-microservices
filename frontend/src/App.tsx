@@ -7,6 +7,7 @@ import { LoginPage } from './pages/auth/LoginPage'
 import { RegisterPage } from './pages/auth/RegisterPage'
 import { HomePage } from './pages/movies/HomePage'
 import { MovieDetailPage } from './pages/movies/MovieDetailPage'
+import { MovieSessionsPage } from './pages/movies/MovieSessionsPage'
 import { BookingPage } from './pages/booking/BookingPage'
 import { BookingSuccessPage } from './pages/booking/BookingSuccessPage'
 import { ProfilePage } from './pages/profile/ProfilePage'
@@ -22,6 +23,7 @@ export default function App() {
         <Route index element={<Navigate to="/movies" replace />} />
         <Route path="movies" element={<HomePage />} />
         <Route path="movies/:id" element={<MovieDetailPage />} />
+        <Route path="movies/:id/sessions" element={<MovieSessionsPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route element={<ProtectedRoute />}>
