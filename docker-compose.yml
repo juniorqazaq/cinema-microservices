@@ -84,6 +84,19 @@ services:
       user-migrate:
         condition: service_completed_successfully
 
+  booking-migrate:
+    image: migrate/migrate:v4.17.1
+    volumes:
+      - ./booking-service/migrations:/migrations
+    command:
+      - -path=/migrations
+      - -database
+      - postgres://postgres:postgres@postgres:5432/booking?sslmode=disable
+      - up
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   booking-service:
     build:
       context: ./booking-service
@@ -98,6 +111,8 @@ services:
         condition: service_healthy
       nats:
         condition: service_started
+      booking-migrate:
+        condition: service_completed_successfully
 
   api-gateway:
     build:
@@ -127,3 +142,20 @@ services:
     depends_on:
       nats:
         condition: service_started
+  movie-service:
+    build:
+      context: ./movie-service
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: movie_db
+      GRPC_PORT: "50052"
+      REDIS_ADDR: user-redis:6379
+    ports:
+      - "50052:50052"
+    depends_on:
+      postgres:
+        condition: service_healthy
