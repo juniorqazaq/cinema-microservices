@@ -9,4 +9,4 @@ CREATE TABLE IF NOT EXISTS payments (
 );
 
 -- Индекс для быстрого поиска платежа по бронированию
-CREATE INDEX idx_payments_booking ON payments(booking_id);
+CREATE INDEX IF NOT EXISTS idx_payments_booking ON payments(booking_id);

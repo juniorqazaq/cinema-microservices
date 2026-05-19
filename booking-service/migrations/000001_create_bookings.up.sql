@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS bookings (
 );
 
 -- Индекс для быстрого поиска броней по пользователю
-CREATE INDEX idx_bookings_user    ON bookings(user_id);
+CREATE INDEX IF NOT EXISTS idx_bookings_user    ON bookings(user_id);
 
 -- Индекс для быстрого поиска броней по сеансу
-CREATE INDEX idx_bookings_session ON bookings(session_id);
+CREATE INDEX IF NOT EXISTS idx_bookings_session ON bookings(session_id);
