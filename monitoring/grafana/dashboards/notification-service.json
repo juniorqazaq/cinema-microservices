@@ -1,0 +1,35 @@
+{
+  "title": "Notification Service",
+  "uid": "notification-service",
+  "tags": ["cinema", "notification-service"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1, "title": "Emails Sent/s", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [{ "expr": "rate(emails_sent_total{job=\"notification-service\"}[1m])", "legendFormat": "{{status}}" }]
+    },
+    {
+      "id": 2, "title": "Total Emails Sent", "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+      "targets": [{ "expr": "emails_sent_total{job=\"notification-service\",status=\"success\"}" }]
+    },
+    {
+      "id": 3, "title": "Failed Emails", "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+      "targets": [{ "expr": "emails_sent_total{job=\"notification-service\",status=\"failed\"}" }]
+    },
+    {
+      "id": 4, "title": "NATS Messages Consumed", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [{ "expr": "rate(nats_messages_consumed_total{job=\"notification-service\"}[1m])", "legendFormat": "{{subject}}" }]
+    },
+    {
+      "id": 5, "title": "Logs", "type": "logs",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [{ "datasource": { "type": "loki" }, "expr": "{service=\"notification-service\"}" }]
+    }
+  ]
+}

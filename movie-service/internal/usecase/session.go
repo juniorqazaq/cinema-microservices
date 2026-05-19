@@ -24,14 +24,14 @@ func NewSessionUseCase(
 	return &SessionUseCase{movies: movies, halls: halls, sessions: sessions, cache: cache}
 }
 
-func (u *SessionUseCase) CreateHall(ctx context.Context, isAdmin bool, name string, capacity int) (*domain.Hall, error) {
+func (u *SessionUseCase) CreateHall(ctx context.Context, isAdmin bool, name string, capacity int, city, cinemaName string) (*domain.Hall, error) {
 	if !isAdmin {
 		return nil, domain.ErrForbidden
 	}
 	if name == "" || capacity <= 0 {
 		return nil, domain.ErrInvalidArgument
 	}
-	h := &domain.Hall{Name: name, Capacity: capacity}
+	h := &domain.Hall{Name: name, Capacity: capacity, City: city, CinemaName: cinemaName}
 	created, err := u.halls.Create(ctx, h)
 	if err != nil {
 		return nil, err
@@ -99,10 +99,14 @@ func (u *SessionUseCase) GetSession(ctx context.Context, id string) (*domain.Ses
 	return s, nil
 }
 
-func (u *SessionUseCase) ListSessions(ctx context.Context, movieID string, day *time.Time, limit, offset int) ([]*domain.Session, int64, error) {
+func (u *SessionUseCase) ListSessions(ctx context.Context, movieID, city string, day *time.Time, limit, offset int) ([]*domain.Session, int64, error) {
 	limit, offset, err := clampPagination(limit, offset)
 	if err != nil {
 		return nil, 0, err
+	}
+	// Date+city+movie filters need SQL (cache path ignores city).
+	if day != nil && (movieID != "" || city != "") {
+		return u.sessions.List(ctx, movieID, city, day, limit, offset)
 	}
 	if day != nil {
 		dateKey := redis.SessionDateKey(*day)
@@ -137,7 +141,7 @@ func (u *SessionUseCase) ListSessions(ctx context.Context, movieID string, day *
 		}
 		return filtered[offset:end], total, nil
 	}
-	return u.sessions.List(ctx, movieID, nil, limit, offset)
+	return u.sessions.List(ctx, movieID, city, nil, limit, offset)
 }
 
 func (u *SessionUseCase) GetAvailableSeats(ctx context.Context, sessionID string) ([]*domain.Seat, error) {
@@ -152,11 +156,5 @@ func (u *SessionUseCase) GetAvailableSeats(ctx context.Context, sessionID string
 	if err != nil {
 		return nil, err
 	}
-	out := make([]*domain.Seat, 0)
-	for _, seat := range seats {
-		if seat.IsAvailable {
-			out = append(out, seat)
-		}
-	}
-	return out, nil
+	return seats, nil
 }

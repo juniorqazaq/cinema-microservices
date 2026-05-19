@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'user-service'
+    static_configs:
+      - targets: ['user-service:9101']
+  - job_name: 'booking-service'
+    static_configs:
+      - targets: ['booking-service:9102']
+  - job_name: 'movie-service'
+    static_configs:
+      - targets: ['movie-service:9103']
+  - job_name: 'notification-service'
+    static_configs:
+      - targets: ['notification-service:9104']
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api-gateway:9105']

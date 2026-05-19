@@ -1,11 +1,11 @@
 export interface User {
   id: string
   email: string
+  full_name?: string
   role: 'user' | 'admin'
   is_banned: boolean
   created_at: string
   updated_at: string
-  /** Optional wallet balance when present in JWT or profile */
   balance?: number
 }
 
@@ -16,6 +16,7 @@ export interface Movie {
   genre: string
   duration: number
   rating: number
+  age_rating?: number
   created_at: string
 }
 
@@ -23,6 +24,8 @@ export interface Hall {
   id: string
   name: string
   capacity: number
+  city?: string
+  cinema_name?: string
 }
 
 export interface Seat {
@@ -39,6 +42,11 @@ export interface Session {
   hall_id: string
   start_time: string
   price: number
+  city?: string
+  cinema_name?: string
+  hall_name?: string
+  available_seats?: number
+  age_rating?: number
 }
 
 export interface Booking {
@@ -47,6 +55,8 @@ export interface Booking {
   session_id: string
   seat_id: string
   status: 'pending' | 'confirmed' | 'cancelled'
+  ticket_category?: string
+  amount_paid?: number
   created_at: string
 }
 
@@ -80,6 +90,7 @@ export interface MoviesListParams {
 export interface SessionsListParams {
   movie_id?: string
   date?: string
+  city?: string
 }
 
 export interface AdminBookingsStats {

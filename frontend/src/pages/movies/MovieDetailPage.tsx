@@ -1,83 +1,24 @@
 import axios from 'axios'
-import { addDays, eachDayOfInterval, format, parseISO } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import { createElement } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import { useMemo, useState } from 'react'
-import { useQueries } from '@tanstack/react-query'
+import { Link, useParams } from 'react-router-dom'
+import { useMemo } from 'react'
 import { useMovie } from '../../hooks/useMovies'
-import { useSessions } from '../../hooks/useSessions'
 import { useTmdbMovie } from '../../hooks/useTmdbMovie'
-import { SessionPicker } from '../../components/movie/SessionPicker'
+import { BuyTicketButton } from '../../components/movie/BuyTicketButton'
 import { ErrorBanner } from '../../components/ui/ErrorBanner'
-import { Spinner } from '../../components/ui/Spinner'
-import { getErrorMessage, mapApiError } from '../../utils/errorHandler'
+import { getErrorMessage } from '../../utils/errorHandler'
 import { formatDuration } from '../../utils/format'
 import { genreIcon, genrePosterClass } from '../../utils/moviePresentation'
-import { getHall } from '../../api/movies'
 import { tmdbImg } from '../../api/tmdb'
-import { useBookingStore } from '../../store/bookingStore'
 import { getMovieById } from '../../lib/movieService'
 import { CatalogMovieDetail } from '../../components/movie/CatalogMovieDetail'
-import type { Session } from '../../types'
-
-const buyTicketBtnClass =
-  'inline-flex min-w-[140px] items-center justify-center rounded-lg border border-accent bg-accent px-4 py-2.5 text-body font-semibold text-white shadow-sm transition-colors hover:border-accentHover hover:bg-accentHover'
 
 export function MovieDetailPage() {
   const { id } = useParams()
-  const navigate = useNavigate()
-  const setMovie = useBookingStore((s) => s.setMovie)
-  const setSession = useBookingStore((s) => s.setSession)
-  const setHall = useBookingStore((s) => s.setHall)
-  const setStep = useBookingStore((s) => s.setStep)
-
   const catalogMovie = useMemo(() => (id ? getMovieById(id) : undefined), [id])
   const movieQuery = useMovie(id, { enabled: Boolean(id) && !catalogMovie })
   const tmdb = useTmdbMovie(catalogMovie ? undefined : movieQuery.data)
-  const [tabIndex, setTabIndex] = useState(0)
-
-  const days = useMemo(() => {
-    const start = new Date()
-    start.setHours(0, 0, 0, 0)
-    return eachDayOfInterval({ start, end: addDays(start, 6) })
-  }, [])
-
-  const selectedDate = days[tabIndex] ?? days[0]
-  const dateParam = format(selectedDate, 'yyyy-MM-dd')
-
-  const sessionsQuery = useSessions(
-    { movie_id: id, date: dateParam },
-    {
-      enabled:
-        Boolean(id) &&
-        !catalogMovie &&
-        Boolean(movieQuery.data) &&
-        Boolean(dateParam),
-    },
-  )
-
-  const sessions = sessionsQuery.data
-  const sessionRows = useMemo(() => sessions ?? [], [sessions])
-  const uniqueHallIds = useMemo(
-    () => Array.from(new Set(sessionRows.map((s) => s.hall_id))),
-    [sessionRows],
-  )
-
-  const hallQueries = useQueries({
-    queries: uniqueHallIds.map((hallId) => ({
-      queryKey: ['hall', hallId],
-      queryFn: () => getHall(hallId),
-      enabled: Boolean(hallId) && sessionRows.length > 0,
-    })),
-  })
-
-  const hallsById = useMemo(() => {
-    const map: Record<string, { name: string } | undefined> = {}
-    uniqueHallIds.forEach((hid, i) => {
-      map[hid] = hallQueries[i]?.data
-    })
-    return map
-  }, [uniqueHallIds, hallQueries])
 
   const notFound =
     !catalogMovie &&
@@ -120,15 +61,6 @@ export function MovieDetailPage() {
   const year = movie.created_at
     ? format(parseISO(movie.created_at), 'yyyy')
     : '—'
-
-  async function handleSessionPick(session: Session) {
-    setMovie(movie)
-    setSession(session)
-    const hall = await getHall(session.hall_id)
-    setHall(hall)
-    setStep(3)
-    navigate('/booking')
-  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -195,57 +127,15 @@ export function MovieDetailPage() {
                 {movie.description}
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
-                <a href="#movie-sessions" className={buyTicketBtnClass}>
-                  Buy ticket
-                </a>
+                <BuyTicketButton />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div id="movie-sessions" className="min-w-0 scroll-mt-28">
-        <div className="my-2 border-t border-border md:hidden" />
-        <h2 className="text-section font-light text-white">Sessions</h2>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {days.map((d, i) => {
-            const active = i === tabIndex
-            return (
-              <button
-                key={d.toISOString()}
-                type="button"
-                onClick={() => setTabIndex(i)}
-                className={`rounded-lg border px-3 py-1.5 text-body font-medium transition-colors duration-150 ${
-                  active
-                    ? 'border-accent bg-accentDim text-white'
-                    : 'border-border bg-card2 text-muted hover:border-border2'
-                }`}
-              >
-                {format(d, 'EEE d')}
-              </button>
-            )
-          })}
-        </div>
-        <div className="mt-4">
-          {sessionsQuery.isLoading ? (
-            <Spinner className="h-6 w-6" />
-          ) : sessionsQuery.isError ? (
-            <p className="text-body text-danger">
-              {mapApiError(
-                axios.isAxiosError(sessionsQuery.error)
-                  ? sessionsQuery.error.response?.status
-                  : undefined,
-              ) ?? 'Could not load sessions.'}
-            </p>
-          ) : (
-            <SessionPicker
-              sessions={sessionRows}
-              hallLabel={(hid) => hallsById[hid]?.name ?? hid.slice(0, 6)}
-              onSelect={(s) => void handleSessionPick(s)}
-            />
-          )}
-        </div>
-      </div>
     </div>
   )
 }
+
+

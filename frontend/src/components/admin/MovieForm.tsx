@@ -13,6 +13,7 @@ const schema = z.object({
   genre: z.string().min(1, 'Genre is required'),
   duration: z.number().min(1, 'Duration must be at least 1'),
   rating: z.number().min(0).max(10),
+  age_rating: z.number().min(0).max(18),
 })
 
 export type MovieFormValues = z.infer<typeof schema>
@@ -45,6 +46,7 @@ export function MovieForm({
           genre: initial.genre,
           duration: initial.duration,
           rating: initial.rating,
+          age_rating: initial.age_rating ?? 12,
         }
       : {
           title: '',
@@ -52,6 +54,7 @@ export function MovieForm({
           genre: MOVIE_GENRES[0],
           duration: 90,
           rating: 7,
+          age_rating: 12,
         },
   })
 
@@ -93,6 +96,15 @@ export function MovieForm({
         min={1}
         {...register('duration', { valueAsNumber: true })}
         error={errors.duration?.message}
+      />
+      <Input
+        id="movie-age"
+        label="Age rating"
+        type="number"
+        min={0}
+        max={18}
+        {...register('age_rating', { valueAsNumber: true })}
+        error={errors.age_rating?.message}
       />
       <Input
         id="movie-rating"

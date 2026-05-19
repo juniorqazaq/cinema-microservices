@@ -22,12 +22,14 @@ var (
 )
 
 type Booking struct {
-	ID        string
-	UserID    string
-	SessionID string
-	SeatID    string
-	Status    string
-	CreatedAt time.Time
+	ID             string
+	UserID         string
+	SessionID      string
+	SeatID         string
+	Status         string
+	TicketCategory string
+	AmountPaid     float64
+	CreatedAt      time.Time
 }
 
 type BookingRepository interface {
@@ -40,5 +42,7 @@ type BookingRepository interface {
 	GetStats(ctx context.Context) (total, confirmed, cancelled int64, err error)
 	CountAll(ctx context.Context) (int64, error)
 	IsSeatAvailable(ctx context.Context, seatID string) (bool, error)
+	IsSeatAvailableForSession(ctx context.Context, sessionID, seatID string) (bool, error)
+	ListTakenSeatIDs(ctx context.Context, sessionID string) ([]string, error)
 	UpdateStatus(ctx context.Context, id, status string) error
 }

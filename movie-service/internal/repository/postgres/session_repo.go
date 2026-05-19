@@ -63,31 +63,38 @@ func (r *SessionRepository) GetByID(ctx context.Context, id string) (*domain.Ses
 	return out, nil
 }
 
-func (r *SessionRepository) List(ctx context.Context, movieID string, date *time.Time, limit, offset int) ([]*domain.Session, int64, error) {
+func (r *SessionRepository) List(ctx context.Context, movieID, city string, date *time.Time, limit, offset int) ([]*domain.Session, int64, error) {
+	from := "FROM sessions s"
 	where := "WHERE 1=1"
 	args := []any{}
 	argPos := 1
+	if city != "" {
+		from += " JOIN halls h ON h.id = s.hall_id"
+		where += fmt.Sprintf(" AND h.city = $%d", argPos)
+		args = append(args, city)
+		argPos++
+	}
 	if movieID != "" {
-		where += fmt.Sprintf(" AND movie_id = $%d::uuid", argPos)
+		where += fmt.Sprintf(" AND s.movie_id = $%d::uuid", argPos)
 		args = append(args, movieID)
 		argPos++
 	}
 	if date != nil {
 		start := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
 		end := start.Add(24 * time.Hour)
-		where += fmt.Sprintf(" AND start_time >= $%d AND start_time < $%d", argPos, argPos+1)
+		where += fmt.Sprintf(" AND s.start_time >= $%d AND s.start_time < $%d", argPos, argPos+1)
 		args = append(args, start, end)
 		argPos += 2
 	}
-	countSQL := "SELECT COUNT(*) FROM sessions " + where
+	countSQL := "SELECT COUNT(*) " + from + " " + where
 	var total int64
 	if err := r.db.QueryRow(ctx, countSQL, args...).Scan(&total); err != nil {
 		return nil, 0, fmt.Errorf("postgres: count sessions: %w", err)
 	}
 	listSQL := fmt.Sprintf(`
-SELECT id, movie_id, hall_id, start_time, price::float8 FROM sessions %s
-ORDER BY start_time ASC
-LIMIT $%d OFFSET $%d`, where, argPos, argPos+1)
+SELECT s.id, s.movie_id, s.hall_id, s.start_time, s.price::float8 %s %s
+ORDER BY s.start_time ASC
+LIMIT $%d OFFSET $%d`, from, where, argPos, argPos+1)
 	args = append(args, limit, offset)
 	rows, err := r.db.Query(ctx, listSQL, args...)
 	if err != nil {

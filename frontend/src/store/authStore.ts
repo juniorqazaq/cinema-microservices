@@ -9,6 +9,8 @@ export interface AuthState {
   isAuthenticated: boolean
   setTokens: (accessToken: string, refreshToken: string) => void
   setUser: (user: User | null) => void
+  topUpBalance: (amount: number) => void
+  adjustBalance: (delta: number) => void
   logout: () => void
 }
 
@@ -21,7 +23,7 @@ const empty = () => ({
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...empty(),
       setTokens: (accessToken, refreshToken) =>
         set({
@@ -30,6 +32,18 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: Boolean(accessToken && refreshToken),
         }),
       setUser: (user) => set({ user }),
+      topUpBalance: (amount) => {
+        const { user } = get()
+        if (!user || amount <= 0) return
+        set({ user: { ...user, balance: (user.balance ?? 0) + amount } })
+      },
+      adjustBalance: (delta) => {
+        const { user } = get()
+        if (!user) return
+        set({
+          user: { ...user, balance: Math.max(0, (user.balance ?? 0) + delta) },
+        })
+      },
       logout: () => set(empty()),
     }),
     {

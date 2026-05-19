@@ -186,6 +186,22 @@ func (f *fakeUserClient) BanUser(context.Context, *userpb.BanUserRequest, ...grp
 	return &userpb.BanUserResponse{}, nil
 }
 
+func (f *fakeUserClient) GetProfile(context.Context, *userpb.GetProfileRequest, ...grpc.CallOption) (*userpb.GetProfileResponse, error) {
+	return &userpb.GetProfileResponse{User: &userpb.User{UserId: "user-1", Email: "user@example.com"}}, nil
+}
+
+func (f *fakeUserClient) TopUpBalance(context.Context, *userpb.TopUpBalanceRequest, ...grpc.CallOption) (*userpb.TopUpBalanceResponse, error) {
+	return &userpb.TopUpBalanceResponse{User: &userpb.User{UserId: "user-1", Email: "user@example.com"}}, nil
+}
+
+func (f *fakeUserClient) DeductBalance(context.Context, *userpb.DeductBalanceRequest, ...grpc.CallOption) (*userpb.DeductBalanceResponse, error) {
+	return &userpb.DeductBalanceResponse{User: &userpb.User{UserId: "user-1", Email: "user@example.com"}}, nil
+}
+
+func (f *fakeUserClient) UpdateUserRole(context.Context, *userpb.UpdateUserRoleRequest, ...grpc.CallOption) (*userpb.UpdateUserRoleResponse, error) {
+	return &userpb.UpdateUserRoleResponse{User: &userpb.User{UserId: "user-1", Email: "user@example.com"}}, nil
+}
+
 type fakeMovieClient struct {
 	lastListMovies *moviepb.ListMoviesRequest
 	getMovieErr    error
@@ -283,4 +299,8 @@ func (f *fakeBookingClient) AdminListBookings(context.Context, *bookingpb.AdminL
 
 func (f *fakeBookingClient) GetBookingStats(context.Context, *bookingpb.GetStatsRequest, ...grpc.CallOption) (*bookingpb.GetStatsResponse, error) {
 	return &bookingpb.GetStatsResponse{}, nil
+}
+
+func (f *fakeBookingClient) GetSessionTakenSeats(context.Context, *bookingpb.GetSessionTakenSeatsRequest, ...grpc.CallOption) (*bookingpb.GetSessionTakenSeatsResponse, error) {
+	return &bookingpb.GetSessionTakenSeatsResponse{}, nil
 }

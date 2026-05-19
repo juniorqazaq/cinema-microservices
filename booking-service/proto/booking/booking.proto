@@ -5,12 +5,14 @@ package booking;
 option go_package = "./proto/booking";
 
 message Booking {
-  string id          = 1;
-  string user_id    = 2;
-  string session_id = 3;
-  string seat_id    = 4;
-  string status      = 5;
-  int64  created_at  = 6;
+  string id               = 1;
+  string user_id          = 2;
+  string session_id       = 3;
+  string seat_id          = 4;
+  string status           = 5;
+  int64  created_at       = 6;
+  string ticket_category  = 7;
+  double amount_paid      = 8;
 }
 
 message Payment {
@@ -22,10 +24,12 @@ message Payment {
 }
 
 message CreateBookingRequest {
-  string user_id     = 1;
-  string session_id  = 2;
-  string seat_id     = 3;
-  string user_email  = 4;
+  string user_id          = 1;
+  string session_id       = 2;
+  string seat_id          = 3;
+  string user_email       = 4;
+  string ticket_category  = 5;
+  double amount           = 6;
 }
 
 message CreateBookingResponse {
@@ -59,8 +63,9 @@ message CancelBookingResponse {
 
 message ConfirmPaymentRequest {
   string booking_id = 1;
-  double amount      = 2;
-  string user_email  = 3;
+  double amount     = 2;
+  string user_email = 3;
+  bool   deduct_balance = 4;
 }
 
 message ConfirmPaymentResponse {
@@ -102,6 +107,14 @@ message CheckSeatResponse {
   bool is_available = 1;
 }
 
+message GetSessionTakenSeatsRequest {
+  string session_id = 1;
+}
+
+message GetSessionTakenSeatsResponse {
+  repeated string seat_ids = 1;
+}
+
 message GetHistoryRequest {
   string user_id = 1;
 }
@@ -140,6 +153,7 @@ service BookingService {
   rpc RefundPayment        (RefundPaymentRequest)  returns (RefundPaymentResponse);
 
   rpc CheckSeatAvailability (CheckSeatRequest)     returns (CheckSeatResponse);
+  rpc GetSessionTakenSeats  (GetSessionTakenSeatsRequest) returns (GetSessionTakenSeatsResponse);
   rpc GetBookingHistory     (GetHistoryRequest)    returns (GetHistoryResponse);
   rpc AdminListBookings     (AdminListRequest)     returns (AdminListResponse);
   rpc GetBookingStats       (GetStatsRequest)      returns (GetStatsResponse);

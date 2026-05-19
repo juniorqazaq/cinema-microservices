@@ -22,12 +22,15 @@ message Movie {
   int32                     duration    = 5;
   double                    rating      = 6;
   google.protobuf.Timestamp created_at  = 7;
+  int32                     age_rating  = 8;
 }
 
 message Hall {
-  string id       = 1;
-  string name     = 2;
-  int32  capacity = 3;
+  string id           = 1;
+  string name         = 2;
+  int32  capacity     = 3;
+  string city         = 4;
+  string cinema_name  = 5;
 }
 
 message Seat {
@@ -53,6 +56,7 @@ message CreateMovieRequest {
   int32  duration    = 4;
   double rating      = 5;
   Role   requester_role = 6;
+  int32  age_rating  = 7;
 }
 
 message CreateMovieResponse {
@@ -75,6 +79,7 @@ message UpdateMovieRequest {
   int32  duration    = 5;
   double rating      = 6;
   Role   requester_role = 7;
+  int32  age_rating  = 8;
 }
 
 message UpdateMovieResponse {
@@ -116,9 +121,11 @@ message SearchMoviesResponse {
 }
 
 message CreateHallRequest {
-  string name     = 1;
-  int32  capacity = 2;
+  string name         = 1;
+  int32  capacity     = 2;
   Role   requester_role = 3;
+  string city         = 4;
+  string cinema_name  = 5;
 }
 
 message CreateHallResponse {
@@ -158,6 +165,7 @@ message ListSessionsRequest {
   google.protobuf.Timestamp date     = 2;
   int32                     limit    = 3;
   int32                     offset   = 4;
+  string                    city     = 5;
 }
 
 message ListSessionsResponse {

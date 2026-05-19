@@ -189,3 +189,48 @@ func (uc *ProfileUseCase) GetUserByEmail(ctx context.Context, input domain.GetUs
 	}
 	return user, nil
 }
+
+func (uc *ProfileUseCase) TopUpBalance(ctx context.Context, userID string, amount float64) (*domain.User, error) {
+	id, err := validation.ParseUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+	user, err := uc.userRepo.TopUpBalance(ctx, id, amount)
+	if err != nil {
+		return nil, apperrors.Wrap("top up balance", err)
+	}
+	_ = uc.cache.DeleteUserCache(ctx, id)
+	return user, nil
+}
+
+func (uc *ProfileUseCase) DeductBalance(ctx context.Context, userID string, amount float64) (*domain.User, error) {
+	id, err := validation.ParseUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+	user, err := uc.userRepo.DeductBalance(ctx, id, amount)
+	if err != nil {
+		return nil, apperrors.Wrap("deduct balance", err)
+	}
+	_ = uc.cache.DeleteUserCache(ctx, id)
+	return user, nil
+}
+
+func (uc *ProfileUseCase) UpdateUserRole(ctx context.Context, adminID, userID string, role domain.Role) (*domain.User, error) {
+	if _, err := uc.requireAdmin(ctx, adminID); err != nil {
+		return nil, err
+	}
+	targetID, err := validation.ParseUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+	if role != domain.RoleUser && role != domain.RoleAdmin && role != domain.RoleModerator {
+		return nil, domain.ErrInvalidArgument
+	}
+	user, err := uc.userRepo.UpdateRole(ctx, targetID, role)
+	if err != nil {
+		return nil, apperrors.Wrap("update user role", err)
+	}
+	_ = uc.cache.DeleteUserCache(ctx, targetID)
+	return user, nil
+}

@@ -3,9 +3,7 @@ import { format, parseISO } from 'date-fns'
 import type { CatalogMovie } from '../../types/movie'
 import { backdropUrl, posterUrl } from '../../lib/movieImages'
 import { genreIdsToLabel } from '../../lib/catalogAdapter'
-
-const buyTicketBtnClass =
-  'inline-flex min-w-[140px] items-center justify-center rounded-lg border border-accent bg-accent px-4 py-2.5 text-body font-semibold text-white shadow-sm transition-colors hover:border-accentHover hover:bg-accentHover'
+import { BuyTicketButton } from './BuyTicketButton'
 
 export function CatalogMovieDetail({ movie }: { movie: CatalogMovie }) {
   const year = movie.release_date
@@ -67,9 +65,7 @@ export function CatalogMovieDetail({ movie }: { movie: CatalogMovie }) {
               </div>
               <p className="mt-3 text-body text-white/85">{movie.overview}</p>
               <div className="mt-4 flex flex-wrap gap-2">
-                <a href="#catalog-tickets-info" className={buyTicketBtnClass}>
-                  Buy ticket
-                </a>
+                <BuyTicketButton />
                 {movie.trailer ? (
                   <a
                     href={movie.trailer}
@@ -136,15 +132,6 @@ export function CatalogMovieDetail({ movie }: { movie: CatalogMovie }) {
         </section>
       ) : null}
 
-      <section
-        id="catalog-tickets-info"
-        className="scroll-mt-28 rounded-lg border border-border bg-card2/50 p-4 text-body text-muted"
-      >
-        <p>
-          Showtimes use the venue API. When this title is synced to your cinema backend,
-          sessions will appear on this page.
-        </p>
-      </section>
     </div>
   )
 }

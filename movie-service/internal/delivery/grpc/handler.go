@@ -23,12 +23,17 @@ func NewHandler(movies *usecase.MovieUseCase, sessions *usecase.SessionUseCase) 
 
 func (h *Handler) CreateMovie(ctx context.Context, req *moviepb.CreateMovieRequest) (*moviepb.CreateMovieResponse, error) {
 	isAdmin := req.GetRequesterRole() == moviepb.Role_ROLE_ADMIN
+	age := int(req.GetAgeRating())
+	if age == 0 {
+		age = 12
+	}
 	m := &domain.Movie{
 		Title:       req.GetTitle(),
 		Description: req.GetDescription(),
 		Genre:       req.GetGenre(),
 		Duration:    int(req.GetDuration()),
 		Rating:      req.GetRating(),
+		AgeRating:   age,
 	}
 	out, err := h.movies.CreateMovie(ctx, isAdmin, m)
 	if err != nil {
@@ -47,6 +52,10 @@ func (h *Handler) GetMovie(ctx context.Context, req *moviepb.GetMovieRequest) (*
 
 func (h *Handler) UpdateMovie(ctx context.Context, req *moviepb.UpdateMovieRequest) (*moviepb.UpdateMovieResponse, error) {
 	isAdmin := req.GetRequesterRole() == moviepb.Role_ROLE_ADMIN
+	age := int(req.GetAgeRating())
+	if age == 0 {
+		age = 12
+	}
 	m := &domain.Movie{
 		ID:          req.GetId(),
 		Title:       req.GetTitle(),
@@ -54,6 +63,7 @@ func (h *Handler) UpdateMovie(ctx context.Context, req *moviepb.UpdateMovieReque
 		Genre:       req.GetGenre(),
 		Duration:    int(req.GetDuration()),
 		Rating:      req.GetRating(),
+		AgeRating:   age,
 	}
 	out, err := h.movies.UpdateMovie(ctx, isAdmin, m)
 	if err != nil {
@@ -113,7 +123,7 @@ func (h *Handler) SearchMovies(ctx context.Context, req *moviepb.SearchMoviesReq
 
 func (h *Handler) CreateHall(ctx context.Context, req *moviepb.CreateHallRequest) (*moviepb.CreateHallResponse, error) {
 	isAdmin := req.GetRequesterRole() == moviepb.Role_ROLE_ADMIN
-	hall, err := h.sessions.CreateHall(ctx, isAdmin, req.GetName(), int(req.GetCapacity()))
+	hall, err := h.sessions.CreateHall(ctx, isAdmin, req.GetName(), int(req.GetCapacity()), req.GetCity(), req.GetCinemaName())
 	if err != nil {
 		return nil, apperrors.ToGRPC(err)
 	}
@@ -167,7 +177,7 @@ func (h *Handler) ListSessions(ctx context.Context, req *moviepb.ListSessionsReq
 		t := d.AsTime().UTC()
 		day = &t
 	}
-	list, total, err := h.sessions.ListSessions(ctx, req.GetMovieId(), day, limit, int(req.GetOffset()))
+	list, total, err := h.sessions.ListSessions(ctx, req.GetMovieId(), req.GetCity(), day, limit, int(req.GetOffset()))
 	if err != nil {
 		return nil, apperrors.ToGRPC(err)
 	}
@@ -198,15 +208,18 @@ func toProtoMovie(m *domain.Movie) *moviepb.Movie {
 		Genre:       m.Genre,
 		Duration:    int32(m.Duration),
 		Rating:      m.Rating,
+		AgeRating:   int32(m.AgeRating),
 		CreatedAt:   timestamppb.New(m.CreatedAt.UTC()),
 	}
 }
 
 func toProtoHall(h *domain.Hall) *moviepb.Hall {
 	return &moviepb.Hall{
-		Id:       h.ID,
-		Name:     h.Name,
-		Capacity: int32(h.Capacity),
+		Id:          h.ID,
+		Name:        h.Name,
+		Capacity:    int32(h.Capacity),
+		City:        h.City,
+		CinemaName:  h.CinemaName,
 	}
 }
 

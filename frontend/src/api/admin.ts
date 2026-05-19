@@ -19,6 +19,13 @@ export async function banUser(id: string): Promise<Record<string, never>> {
   return post<Record<string, never>>(`/admin/users/${id}/ban`, {})
 }
 
+export async function updateUserRole(
+  id: string,
+  role: 'user' | 'admin',
+): Promise<User> {
+  return put<User>(`/admin/users/${id}/role`, { role })
+}
+
 export async function createMovie(
   data: Omit<Movie, 'id' | 'created_at'>,
 ): Promise<Movie> {
@@ -39,8 +46,10 @@ export async function deleteMovie(id: string): Promise<Record<string, never>> {
 export async function createHall(
   name: string,
   capacity: number,
+  city: string,
+  cinema_name: string,
 ): Promise<Hall> {
-  return post<Hall>('/admin/halls', { name, capacity })
+  return post<Hall>('/admin/halls', { name, capacity, city, cinema_name })
 }
 
 export async function createSession(

@@ -1,0 +1,3 @@
+DROP INDEX IF EXISTS idx_halls_city;
+ALTER TABLE halls DROP COLUMN IF EXISTS city, DROP COLUMN IF EXISTS cinema_name;
+ALTER TABLE movies DROP COLUMN IF EXISTS age_rating;

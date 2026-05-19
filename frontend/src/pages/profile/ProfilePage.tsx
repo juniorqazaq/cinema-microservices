@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQueries } from '@tanstack/react-query'
 import { isFuture, parseISO } from 'date-fns'
@@ -16,7 +16,9 @@ import { ErrorBanner } from '../../components/ui/ErrorBanner'
 import { Input } from '../../components/ui/Input'
 import { Spinner } from '../../components/ui/Spinner'
 import { useAuthStore } from '../../store/authStore'
-import { formatDate } from '../../utils/format'
+import { fetchProfile, topUpWallet } from '../../api/wallet'
+import { TopUpModal } from '../../components/booking/TopUpModal'
+import { formatDate, formatPrice } from '../../utils/format'
 import { getErrorMessage } from '../../utils/errorHandler'
 import type { Booking, Session } from '../../types'
 
@@ -50,10 +52,20 @@ function bookingCategory(
 
 export function ProfilePage() {
   const user = useAuthStore((s) => s.user)
+  const setUser = useAuthStore((s) => s.setUser)
   const { changePasswordMutation } = useAuth()
   const historyQuery = useBookingHistory()
   const [tab, setTab] = useState<Tab>('upcoming')
   const [pwOpen, setPwOpen] = useState(false)
+  const [topUpOpen, setTopUpOpen] = useState(false)
+
+  useEffect(() => {
+    void fetchProfile()
+      .then(setUser)
+      .catch(() => {
+        /* keep cached user */
+      })
+  }, [setUser])
 
   const bookings = historyQuery.data
   const bookingsList = bookings ?? EMPTY_BOOKINGS
@@ -135,6 +147,21 @@ export function ProfilePage() {
       </section>
 
       <section className="rounded-lg border border-border bg-card p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-body font-medium text-white">Wallet</p>
+            <p className="mt-1 text-2xl font-semibold text-accent">
+              {formatPrice(user.balance ?? 0)}
+            </p>
+          </div>
+          <Button type="button" onClick={() => setTopUpOpen(true)}>
+            Top up
+          </Button>
+        </div>
+      </section>
+
+      <section className="rounded-lg border border-border bg-card p-4">
+        <p className="mb-3 text-body font-medium text-white">My tickets</p>
         <div className="flex flex-wrap gap-2 border-b border-border pb-3">
           {tabs.map((t) => (
             <button
@@ -253,6 +280,17 @@ export function ProfilePage() {
           </div>
         ) : null}
       </section>
+
+      <TopUpModal
+        open={topUpOpen}
+        currentBalance={user.balance ?? 0}
+        onClose={() => setTopUpOpen(false)}
+        onConfirm={async (amount) => {
+          const updated = await topUpWallet(amount)
+          setUser(updated)
+          setTopUpOpen(false)
+        }}
+      />
     </div>
   )
 }

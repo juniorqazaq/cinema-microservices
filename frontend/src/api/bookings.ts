@@ -4,8 +4,15 @@ import type { Booking, Payment } from '../types'
 export async function createBooking(
   session_id: string,
   seat_id: string,
+  ticket_category: string,
+  amount: number,
 ): Promise<Booking> {
-  return post<Booking>('/bookings', { session_id, seat_id })
+  return post<Booking>('/bookings', {
+    session_id,
+    seat_id,
+    ticket_category,
+    amount,
+  })
 }
 
 export async function getBooking(id: string): Promise<Booking> {
@@ -27,8 +34,13 @@ export async function getBookingHistory(): Promise<Booking[]> {
 export async function confirmPayment(
   booking_id: string,
   amount: number,
+  use_wallet = false,
 ): Promise<Payment> {
-  return post<Payment>('/payments/confirm', { booking_id, amount })
+  return post<Payment>('/payments/confirm', {
+    booking_id,
+    amount,
+    use_wallet,
+  })
 }
 
 export async function getPayment(id: string): Promise<Payment> {

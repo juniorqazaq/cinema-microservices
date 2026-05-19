@@ -1,0 +1,35 @@
+{
+  "title": "API Gateway",
+  "uid": "api-gateway",
+  "tags": ["cinema", "api-gateway"],
+  "timezone": "browser",
+  "schemaVersion": 36,
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1, "title": "HTTP Request Rate", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [{ "expr": "rate(http_requests_total{job=\"api-gateway\"}[1m])", "legendFormat": "{{method}} {{path}}" }]
+    },
+    {
+      "id": 2, "title": "HTTP Status Codes", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [{ "expr": "rate(http_requests_total{job=\"api-gateway\"}[1m])", "legendFormat": "{{status_code}}" }]
+    },
+    {
+      "id": 3, "title": "Latency p95", "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [{ "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"api-gateway\"}[5m]))", "legendFormat": "p95" }]
+    },
+    {
+      "id": 4, "title": "5xx Errors", "type": "stat",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 8 },
+      "targets": [{ "expr": "rate(http_requests_total{job=\"api-gateway\",status_code=~\"5..\"}[1m])" }]
+    },
+    {
+      "id": 5, "title": "Logs", "type": "logs",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "targets": [{ "datasource": { "type": "loki" }, "expr": "{service=\"api-gateway\"}" }]
+    }
+  ]
+}

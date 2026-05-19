@@ -3,14 +3,18 @@ package grpc
 import (
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
 	pb "booking-service/proto/booking"
-	"github.com/grpc-ecosystem/go-grpc-middleware"
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
-	"github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpcprom "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -23,11 +27,9 @@ type Server struct {
 }
 
 func NewServer(handler *Handler) *Server {
-	// Logger setup (simple zap production logger)
 	logger, _ := zap.NewProduction()
 	defer logger.Sync()
 
-	// Recovery handler
 	recoveryOpts := []grpc_recovery.Option{
 		grpc_recovery.WithRecoveryHandler(func(p interface{}) (err error) {
 			log.Printf("Recovered from panic: %v", p)
@@ -35,12 +37,25 @@ func NewServer(handler *Handler) *Server {
 		}),
 	}
 
+	grpcprom.EnableHandlingTimeHistogram()
+
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+			grpcprom.UnaryServerInterceptor,
 			grpc_zap.UnaryServerInterceptor(logger),
 			grpc_recovery.UnaryServerInterceptor(recoveryOpts...),
 		)),
+		grpc.StreamInterceptor(grpcprom.StreamServerInterceptor),
 	)
+
+	go func() {
+		mux := http.NewServeMux()
+		mux.Handle("/metrics", promhttp.Handler())
+		log.Println("booking-service metrics on :9102")
+		if err := http.ListenAndServe(":9102", mux); err != nil {
+			log.Printf("metrics server error: %v", err)
+		}
+	}()
 
 	return &Server{
 		grpcServer: grpcServer,
@@ -53,8 +68,8 @@ func (s *Server) Run(port string) error {
 	if err != nil {
 		return err
 	}
-
 	pb.RegisterBookingServiceServer(s.grpcServer, s.handler)
+	grpcprom.Register(s.grpcServer)
 
 	go func() {
 		log.Printf("Starting gRPC server on port %s", port)
@@ -63,14 +78,10 @@ func (s *Server) Run(port string) error {
 		}
 	}()
 
-	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
-
 	log.Println("Shutting down gRPC server...")
 	s.grpcServer.GracefulStop()
-	log.Println("gRPC server stopped.")
-
 	return nil
 }

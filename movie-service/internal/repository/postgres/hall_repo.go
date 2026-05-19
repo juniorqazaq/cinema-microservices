@@ -18,23 +18,31 @@ func NewHallRepository(db *pgxpool.Pool) *HallRepository {
 	return &HallRepository{db: db}
 }
 
-const createHallSQL = `INSERT INTO halls (name, capacity) VALUES ($1, $2) RETURNING id, name, capacity`
+const createHallSQL = `INSERT INTO halls (name, capacity, city, cinema_name) VALUES ($1, $2, $3, $4) RETURNING id, name, capacity, city, cinema_name`
 
 func (r *HallRepository) Create(ctx context.Context, h *domain.Hall) (*domain.Hall, error) {
-	row := r.db.QueryRow(ctx, createHallSQL, h.Name, h.Capacity)
+	city := h.City
+	if city == "" {
+		city = "Astana"
+	}
+	cinema := h.CinemaName
+	if cinema == "" {
+		cinema = h.Name
+	}
+	row := r.db.QueryRow(ctx, createHallSQL, h.Name, h.Capacity, city, cinema)
 	var out domain.Hall
-	if err := row.Scan(&out.ID, &out.Name, &out.Capacity); err != nil {
+	if err := row.Scan(&out.ID, &out.Name, &out.Capacity, &out.City, &out.CinemaName); err != nil {
 		return nil, fmt.Errorf("postgres: create hall: %w", err)
 	}
 	return &out, nil
 }
 
-const getHallByIDSQL = `SELECT id, name, capacity FROM halls WHERE id = $1`
+const getHallByIDSQL = `SELECT id, name, capacity, city, cinema_name FROM halls WHERE id = $1`
 
 func (r *HallRepository) GetByID(ctx context.Context, id string) (*domain.Hall, error) {
 	row := r.db.QueryRow(ctx, getHallByIDSQL, id)
 	var h domain.Hall
-	if err := row.Scan(&h.ID, &h.Name, &h.Capacity); err != nil {
+	if err := row.Scan(&h.ID, &h.Name, &h.Capacity, &h.City, &h.CinemaName); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, domain.ErrHallNotFound
 		}
@@ -65,9 +73,9 @@ func (r *HallRepository) GetSeats(ctx context.Context, hallID string) ([]*domain
 
 const insertSeatSQL = `INSERT INTO seats (hall_id, row, number, is_available) VALUES ($1, $2, $3, true)`
 
-// InsertSeatsForHall creates a simple row layout: R1..Rk with numbered seats up to capacity.
+// InsertSeatsForHall creates rows A..J with up to 15 seats per row (VIP rows A–B when capacity allows).
 func (r *HallRepository) InsertSeatsForHall(ctx context.Context, hallID string, capacity int) error {
-	perRow := 10
+	perRow := 15
 	if capacity < perRow {
 		perRow = capacity
 	}
@@ -77,7 +85,7 @@ func (r *HallRepository) InsertSeatsForHall(ctx context.Context, hallID string, 
 	rows := (capacity + perRow - 1) / perRow
 	n := 0
 	for ri := 0; ri < rows && n < capacity; ri++ {
-		rowLabel := fmt.Sprintf("R%d", ri+1)
+		rowLabel := string(rune('A' + ri))
 		for seatNum := 1; seatNum <= perRow && n < capacity; seatNum++ {
 			if _, err := r.db.Exec(ctx, insertSeatSQL, hallID, rowLabel, seatNum); err != nil {
 				return fmt.Errorf("postgres: insert seat: %w", err)

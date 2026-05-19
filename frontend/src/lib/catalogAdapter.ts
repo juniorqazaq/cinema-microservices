@@ -41,6 +41,7 @@ export function catalogToMovie(c: CatalogMovie): Movie {
     genre: genreIdsToLabel(c.genre_ids),
     duration,
     rating: c.vote_average,
+    age_rating: c.adult ? 18 : 12,
     created_at: c.release_date
       ? `${c.release_date}T12:00:00.000Z`
       : new Date().toISOString(),

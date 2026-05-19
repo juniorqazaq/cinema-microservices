@@ -56,12 +56,14 @@ func mapBookingToPB(b *domain.Booking) *pb.Booking {
 		return nil
 	}
 	return &pb.Booking{
-		Id:        b.ID,
-		UserId:    b.UserID,
-		SessionId: b.SessionID,
-		SeatId:    b.SeatID,
-		Status:    b.Status,
-		CreatedAt: b.CreatedAt.Unix(),
+		Id:             b.ID,
+		UserId:         b.UserID,
+		SessionId:      b.SessionID,
+		SeatId:         b.SeatID,
+		Status:         b.Status,
+		TicketCategory: b.TicketCategory,
+		AmountPaid:     b.AmountPaid,
+		CreatedAt:      b.CreatedAt.Unix(),
 	}
 }
 
@@ -83,7 +85,7 @@ func mapPaymentToPB(p *domain.Payment) *pb.Payment {
 }
 
 func (h *Handler) CreateBooking(ctx context.Context, req *pb.CreateBookingRequest) (*pb.CreateBookingResponse, error) {
-	b, err := h.bookingUC.CreateBooking(ctx, req.UserId, req.SessionId, req.SeatId, req.UserEmail)
+	b, err := h.bookingUC.CreateBooking(ctx, req.UserId, req.SessionId, req.SeatId, req.UserEmail, req.TicketCategory, req.Amount)
 	if err != nil {
 		return nil, mapError(err)
 	}
@@ -175,6 +177,17 @@ func (h *Handler) CheckSeatAvailability(ctx context.Context, req *pb.CheckSeatRe
 		return nil, mapError(err)
 	}
 	return &pb.CheckSeatResponse{IsAvailable: ok}, nil
+}
+
+func (h *Handler) GetSessionTakenSeats(ctx context.Context, req *pb.GetSessionTakenSeatsRequest) (*pb.GetSessionTakenSeatsResponse, error) {
+	if req.SessionId == "" {
+		return nil, status.Error(codes.InvalidArgument, "session_id is required")
+	}
+	ids, err := h.bookingRepo.ListTakenSeatIDs(ctx, req.SessionId)
+	if err != nil {
+		return nil, mapError(err)
+	}
+	return &pb.GetSessionTakenSeatsResponse{SeatIds: ids}, nil
 }
 
 func (h *Handler) GetBookingHistory(ctx context.Context, req *pb.GetHistoryRequest) (*pb.GetHistoryResponse, error) {

@@ -1,6 +1,7 @@
 import type { Hall, Movie, Session } from '../../types'
-import { formatDate, formatPrice, formatTime } from '../../utils/format'
+import { formatDate, formatPrice, formatTimeLocal } from '../../utils/format'
 import { useBookingStore } from '../../store/bookingStore'
+import { ticketPrice } from '../../constants/ticketCategories'
 
 interface OrderSummaryProps {
   movie: Movie
@@ -15,15 +16,17 @@ function isVipRow(row: string): boolean {
 
 export function OrderSummary({ movie, session, hall }: OrderSummaryProps) {
   const selectedSeats = useBookingStore((s) => s.selectedSeats)
+  const ticketCategory = useBookingStore((s) => s.ticketCategory)
 
-  const total = selectedSeats.length * session.price
+  const unitPrice = ticketPrice(session.price, ticketCategory)
+  const total = selectedSeats.length * unitPrice
 
   return (
     <aside className="w-full shrink-0 border border-border bg-card p-3 lg:w-[180px]">
       <p className="text-card-title font-medium text-white">{movie.title}</p>
       <p className="mt-2 text-body text-muted">{hall.name}</p>
       <p className="mt-1 text-body text-white">
-        {formatTime(session.start_time)} · {formatDate(session.start_time)}
+        {formatTimeLocal(session.start_time)} · {formatDate(session.start_time)}
       </p>
       <div className="my-3 border-t border-border" />
       {selectedSeats.length === 0 ? (
@@ -34,7 +37,7 @@ export function OrderSummary({ movie, session, hall }: OrderSummaryProps) {
             <li key={seat.id} className="text-body text-muted">
               {seat.row}
               {seat.number} · {isVipRow(seat.row) ? 'VIP' : 'Standard'} ·{' '}
-              {formatPrice(session.price)}
+              {formatPrice(unitPrice)}
             </li>
           ))}
         </ul>

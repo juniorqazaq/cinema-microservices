@@ -20,6 +20,7 @@ type Movie struct {
 	Genre       string
 	Duration    int
 	Rating      float64
+	AgeRating   int
 	CreatedAt   time.Time
 }
 
